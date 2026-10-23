@@ -476,7 +476,7 @@
   if (Howl?.prototype && !Howl.prototype.localMp3First) {
     const init = Howl.prototype.init;
     Howl.prototype.init = function (options) {
-      if (Array.isArray(options?.src) && options.src.some((source) => source.includes('/resources/sounds/ambient/'))) {
+      if (Array.isArray(options?.src) && options.src.some((source) => source.includes('resources/sounds/ambient/'))) {
         options = { ...options, src: options.src.slice().sort((left, right) => Number(right.endsWith('.mp3')) - Number(left.endsWith('.mp3'))) };
       }
       return init.call(this, options);
@@ -498,7 +498,7 @@
   const themes = flocus?.themes;
   const themeKey = 'AbyssalGlow';
   const themeName = 'Abyssal Glow';
-  const themeImage = '/resources/images/themes/abyssal-glow.svg';
+  const themeImage = 'resources/images/themes/abyssal-glow.svg';
 
   if (themes?.catalog) {
     themes.catalog[themeKey] ||= {

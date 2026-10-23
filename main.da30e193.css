@@ -4,24 +4,24 @@
   font-style: normal;
   font-weight: 700;
   src:
-    url(/resources/fonts/a8d7e850394f33cfb38d.woff2) format("woff2"),
-    url(/resources/fonts/be4d3c9f903be64703e3.woff) format("woff");
+    url(resources/fonts/a8d7e850394f33cfb38d.woff2) format("woff2"),
+    url(resources/fonts/be4d3c9f903be64703e3.woff) format("woff");
 }
 @font-face {
   font-family: "Degular Semibold";
   font-style: normal;
   font-weight: 600;
   src:
-    url(/resources/fonts/058438b44b35420114ac.woff2) format("woff2"),
-    url(/resources/fonts/4d4603331083ce54bfed.woff) format("woff");
+    url(resources/fonts/058438b44b35420114ac.woff2) format("woff2"),
+    url(resources/fonts/4d4603331083ce54bfed.woff) format("woff");
 }
 @supports (font-variation-settings: normal) {
   @font-face {
     font-family: "Degular";
     src:
-      url(/resources/fonts/642acecaf3c877881b97.woff2)
+      url(resources/fonts/642acecaf3c877881b97.woff2)
         format("woff2 supports variations"),
-      url(/resources/fonts/642acecaf3c877881b97.woff2)
+      url(resources/fonts/642acecaf3c877881b97.woff2)
         format("woff2-variations");
     font-weight: 100 1000;
     font-stretch: 25% 151%;
@@ -31,9 +31,9 @@
   @font-face {
     font-family: "Inter";
     src:
-      url(/resources/fonts/11783d6e291288bd5095.woff2)
+      url(resources/fonts/11783d6e291288bd5095.woff2)
         format("woff2 supports variations"),
-      url(/resources/fonts/11783d6e291288bd5095.woff2)
+      url(resources/fonts/11783d6e291288bd5095.woff2)
         format("woff2-variations");
     font-weight: 100 1000;
     font-stretch: 25% 151%;
@@ -43,7 +43,7 @@
   font-family: "Degular Clock";
   font-style: normal;
   font-weight: 100 1000;
-  src: url(/resources/fonts/642acecaf3c877881b97.woff2) format("woff2");
+  src: url(resources/fonts/642acecaf3c877881b97.woff2) format("woff2");
   size-adjust: 100%;
   ascent-override: 61%;
   descent-override: 1%;
@@ -53,7 +53,7 @@
   font-family: "Inter Clock";
   font-style: normal;
   font-weight: 100 1000;
-  src: url(/resources/fonts/11783d6e291288bd5095.woff2) format("woff2");
+  src: url(resources/fonts/11783d6e291288bd5095.woff2) format("woff2");
   size-adjust: 82.74%;
   ascent-override: 73.72%;
   descent-override: 1.21%;
@@ -63,7 +63,7 @@
   font-family: "DM Serif Display";
   font-style: normal;
   font-weight: normal;
-  src: url(/resources/fonts/782b381ae5b784112ec9.woff2) format("woff2");
+  src: url(resources/fonts/782b381ae5b784112ec9.woff2) format("woff2");
   size-adjust: 93.99%;
   ascent-override: 64.9%;
   descent-override: 1.06%;
@@ -73,7 +73,7 @@
   font-family: "Instrument Serif";
   font-style: normal;
   font-weight: normal;
-  src: url(/resources/fonts/1d7316619b95b26f82d1.woff2) format("woff2");
+  src: url(resources/fonts/1d7316619b95b26f82d1.woff2) format("woff2");
   size-adjust: 83.56%;
   ascent-override: 73%;
   descent-override: 1.2%;
@@ -83,7 +83,7 @@
   font-family: "Gaegu";
   font-style: normal;
   font-weight: normal;
-  src: url(/resources/fonts/ce614d7e2ab068dd7070.woff2) format("woff2");
+  src: url(resources/fonts/ce614d7e2ab068dd7070.woff2) format("woff2");
   size-adjust: 114.02%;
   ascent-override: 53.5%;
   descent-override: 0.88%;
@@ -93,7 +93,7 @@
   font-family: "Soft";
   font-style: normal;
   font-weight: normal;
-  src: url(/resources/fonts/baddad41f088a07bbe2f.woff2) format("woff2");
+  src: url(resources/fonts/baddad41f088a07bbe2f.woff2) format("woff2");
   size-adjust: 95.22%;
   ascent-override: 64.06%;
   descent-override: 1.05%;
@@ -103,7 +103,7 @@
   font-family: "Bubble";
   font-style: normal;
   font-weight: normal;
-  src: url(/resources/fonts/7a005b7606f3787ec2f9.woff2) format("woff2");
+  src: url(resources/fonts/7a005b7606f3787ec2f9.woff2) format("woff2");
   size-adjust: 121.27%;
   ascent-override: 50.3%;
   descent-override: 0.82%;
@@ -113,7 +113,7 @@
   font-family: "Heavy Wide";
   font-style: normal;
   font-weight: normal;
-  src: url(/resources/fonts/034ba81f2199f24d617e.woff2) format("woff2");
+  src: url(resources/fonts/034ba81f2199f24d617e.woff2) format("woff2");
   size-adjust: 86.16%;
   ascent-override: 70.8%;
   descent-override: 1.16%;
@@ -123,7 +123,7 @@
   font-family: "Sporty";
   font-style: normal;
   font-weight: normal;
-  src: url(/resources/fonts/80e7c5f640b6df6c6a63.woff2) format("woff2");
+  src: url(resources/fonts/80e7c5f640b6df6c6a63.woff2) format("woff2");
   size-adjust: 84.43%;
   ascent-override: 72.25%;
   descent-override: 1.18%;
@@ -133,7 +133,7 @@
   font-family: "Digital";
   font-style: normal;
   font-weight: normal;
-  src: url(/resources/fonts/55ee4d46d6764d9997bd.woff2) format("woff2");
+  src: url(resources/fonts/55ee4d46d6764d9997bd.woff2) format("woff2");
   size-adjust: 93.19%;
   ascent-override: 65.45%;
   descent-override: 1.07%;
@@ -15858,7 +15858,7 @@ settings-panel #settModal-extras .lock-status-text {
   font-size: 0.875rem;
 }
 plus-badge {
-  content: url(/resources/plus-badge.1baf23e5.svg);
+  content: url(resources/plus-badge.1baf23e5.svg);
   display: inline-block;
   margin-left: 0.5rem;
   line-height: 100%;
