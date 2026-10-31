@@ -1,4 +1,14 @@
-(() => {
+﻿(() => {
+  // Empêcher l'altération de l'URL de base par history.pushState / replaceState (évite les erreurs 404 sur les ressources)
+  const origReplaceState = history.replaceState;
+  const origPushState = history.pushState;
+  history.replaceState = function(state, unused, url) {
+    return;
+  };
+  history.pushState = function(state, unused, url) {
+    return;
+  };
+
   // ===== OPTIMISATION : PRÉCHARGEMENT DE LA POLICE INTER =====
   const preloadFont = () => {
     const link = document.createElement('link');
@@ -720,3 +730,4 @@
     });
   }).observe(document.body, { childList: true, characterData: true, subtree: true });
 })();
+
