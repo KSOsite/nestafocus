@@ -482,14 +482,113 @@
   `;
   document.head.appendChild(style);
 
+  // ===== TABLE DE CORRESPONDANCE DES HASH AMBIANTS =====
+  const SOUND_HASH_MAP = {
+  "4727b2031ce204388849.mp3": "AirConditioner",
+  "d82609962df4eb5975a2.mp3": "AirplaneCabin",
+  "8a4187dc126699b9ce0c.mp3": "AirportTerminal",
+  "bbfcd4ad25899ad7e164.mp3": "BirdsInWoods",
+  "57b6029882984e8958ac.mp3": "BowlingAlley",
+  "756d1ff4de368af550c6.mp3": "BrownNoise",
+  "60ab645cc7610765b8e1.mp3": "Campfire",
+  "fe0d29eaf53d43d7a158.mp3": "CatPurr",
+  "2a0ccf3fac23ccffe820.mp3": "CentralPark",
+  "f32d9a5b1a26cd8c79cd.mp3": "ClockTicking",
+  "702fd7555a2507e595bd.mp3": "CommuterTrain",
+  "d10b24ca5c3c126051e2.mp3": "CountrysideMorning",
+  "0cc13b0da5899e05f1bd.mp3": "DeepSea",
+  "d9118834468455485ec6.mp3": "ExamHall",
+  "22b7f37778b17d7b4550.mp3": "Fireplace",
+  "4dfc50e9e0db607091e1.mp3": "HeavyRain",
+  "8758dc2a2c253cbf633d.mp3": "HomeKitchen",
+  "ae331f96d9fd260eba0f.mp3": "JapaneseLibrary",
+  "5fafa2f880d6023e564d.mp3": "LaptopKeyboard",
+  "d3f3e7e9dbbcb0c0fafd.mp3": "LightRain",
+  "0df98d229d06fe5716ff.mp3": "LightRainOnTent",
+  "4e06a1f72e4f2a1c9f8a.mp3": "NYCMorning",
+  "3d77f4dfcf856e550ff5.mp3": "Office",
+  "2330697166645370d78a.mp3": "OuterSpaceRumble",
+  "42df10e3ae8d83f524cd.mp3": "PinkNoise",
+  "2672781d7fe01d928e83.mp3": "RecordPlayerStatic",
+  "d09ad6ae1e94faab79c0.mp3": "RoomFan",
+  "fa85f665f53784ea69d8.mp3": "StreetCafe",
+  "b00b51d904a8c3960608.mp3": "SummerNight",
+  "63d51140cd773192744a.mp3": "Thunderstorm",
+  "e2743193a74ae7792dc1.mp3": "Underwater",
+  "109a767a3458149c978d.mp3": "Waterfall",
+  "018e1a19e38426e0a31e.mp3": "WavesAlpha",
+  "e5608b38b7a0608cecd6.mp3": "WavesBeta",
+  "e73647855d09b3cdc481.mp3": "WavesDelta",
+  "c262640e6e19d2a34b8d.mp3": "WavesGamma",
+  "b30c47f9bcfe96928ae4.mp3": "WavesTheta",
+  "4d5396d64b052832f108.mp3": "Whales",
+  "ab8bb4f562134c4299cd.mp3": "WhiteNoise",
+  "834ed376e82c7bc432c4.mp3": "Wind",
+  "5b6c53247db27e79041f.mp3": "cafe",
+  "9a8f84499b6f6e898daa.mp3": "ocean",
+  "7095ceb8eeda6eeff06d.mp3": "rain",
+  "c335457062e55d1b089a.mp4": "AirConditioner",
+  "4589a23538eaf05ce8b0.mp4": "AirplaneCabin",
+  "35d3b17e9de353a78191.mp4": "AirportTerminal",
+  "ee95b49efd6ad4bb0e76.mp4": "BirdsInWoods",
+  "aaac76a7ad84832a4ddc.mp4": "BowlingAlley",
+  "5a0bdbbe77e36124a99f.mp4": "BrownNoise",
+  "8869d7cd9885043fd19d.mp4": "Campfire",
+  "18bb259c0450a0a97a52.mp4": "CatPurr",
+  "d861bc4b027d5b20fccc.mp4": "CentralPark",
+  "6ec75011bb66cd40c6f8.mp4": "ClockTicking",
+  "62c09e0f5a5108f57771.mp4": "CommuterTrain",
+  "98725fc0466f1f3bcf2a.mp4": "CountrysideMorning",
+  "873a312f6345ce7445ea.mp4": "DeepSea",
+  "dd0075199096b75cc12c.mp4": "ExamHall",
+  "b2e5a438a0628dc46bbc.mp4": "Fireplace",
+  "7343d73f0cc81523d777.mp4": "HeavyRain",
+  "20dcc9d36f5208005751.mp4": "HomeKitchen",
+  "086407010f0fa0185e93.mp4": "JapaneseLibrary",
+  "40db59bcdc35227f9ab7.mp4": "LaptopKeyboard",
+  "007c2304812dfe2d8c23.mp4": "LightRain",
+  "fd9d7ad217127a1045d5.mp4": "LightRainOnTent",
+  "5582a831d396a919b80a.mp4": "NYCMorning",
+  "7a21d9739c6cecac1b2f.mp4": "Office",
+  "4d287a41c241c115260e.mp4": "OuterSpaceRumble",
+  "b9b396eadc57973cdb16.mp4": "PinkNoise",
+  "6bda7502213c9f4e97c9.mp4": "RecordPlayerStatic",
+  "bd076de7acfce400fc20.mp4": "RoomFan",
+  "df4507abb47894974578.mp4": "StreetCafe",
+  "95be410e94c8bb50202a.mp4": "SummerNight",
+  "fe6a6111651c344bbb15.mp4": "Thunderstorm",
+  "fde61c90bce68f302bb3.mp4": "Underwater",
+  "78bc0224b484c58296d2.mp4": "Waterfall",
+  "21f2ce8e7319a0048045.mp4": "WavesAlpha",
+  "5f60a5e0f0fcdd31d896.mp4": "WavesBeta",
+  "65f215f3004d1e3bb56f.mp4": "WavesDelta",
+  "a81ebbfee4922837b621.mp4": "WavesGamma",
+  "53c331c2c7d18131bd40.mp4": "WavesTheta",
+  "50e0923c6d5d97233e14.mp4": "Whales",
+  "58f73b9499449cd4f448.mp4": "WhiteNoise",
+  "100b85ee78116284346b.mp4": "Wind",
+  "fc2c4fc3853f288086c0.mp4": "cafe",
+  "5d07b7bec8e7d6bbc1c1.mp4": "ocean",
+  "887b357a1948acfba037.mp4": "rain"
+};
+
   // ===== AMBIENT AUDIO SYNTHESIZER (PROCEDURAL WAV BLOBS) =====
   const createAmbientWavUrl = (() => {
     const cache = {};
-    return (rawName) => {
-      const type = String(rawName || 'noise').toLowerCase();
-      if (cache[type]) return cache[type];
+    return (rawPath) => {
+      let name = String(rawPath || 'noise');
+      // Resolve hash to sound name
+      for (const [hashFile, soundName] of Object.entries(SOUND_HASH_MAP)) {
+        if (name.includes(hashFile)) {
+          name = soundName;
+          break;
+        }
+      }
+      const key = name.toLowerCase();
+      if (cache[key]) return cache[key];
+      
       const sampleRate = 22050;
-      const duration = 3.5;
+      const duration = 4.0;
       const numSamples = Math.floor(sampleRate * duration);
       const buffer = new ArrayBuffer(44 + numSamples * 2);
       const view = new DataView(buffer);
@@ -513,43 +612,79 @@
       for (let i = 0; i < numSamples; i++) {
         let sample = 0;
         const white = Math.random() * 2 - 1;
-        if (type.includes('rain') || type.includes('waterfall') || type.includes('thunder')) {
-          b0 = 0.99886 * b0 + white * 0.0555179;
-          b1 = 0.99332 * b1 + white * 0.0750759;
-          b2 = 0.96900 * b2 + white * 0.1538520;
-          b3 = 0.86650 * b3 + white * 0.3104856;
-          b4 = 0.55000 * b4 + white * 0.5329522;
-          b5 = -0.7616 * b5 - white * 0.0168980;
-          sample = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.08;
-          b6 = white * 0.115926;
-        } else if (type.includes('ocean') || type.includes('sea') || type.includes('waves') || type.includes('water')) {
-          last = (last + 0.02 * white) / 1.02;
-          const lfo = 0.5 + 0.5 * Math.sin(2 * Math.PI * 0.25 * (i / sampleRate));
-          sample = last * 1.8 * lfo;
-        } else if (type.includes('fire') || type.includes('camp')) {
-          last = (last + 0.03 * white) / 1.03;
-          const crackle = Math.random() < 0.003 ? Math.random() * 0.8 : 0;
-          sample = (last * 1.2 + crackle) * 0.3;
-        } else if (type.includes('cafe') || type.includes('terminal') || type.includes('train') || type.includes('station')) {
-          last = (last + 0.025 * white) / 1.025;
-          const chatter = Math.sin(2 * Math.PI * 300 * (i / sampleRate)) * (Math.random() < 0.01 ? 0.2 : 0);
-          sample = (last + chatter) * 0.4;
-        } else if (type.includes('wind') || type.includes('fan') || type.includes('air') || type.includes('space')) {
+        const t = i / sampleRate;
+        
+        if (key.includes('thunder')) {
+          b0 = 0.99886 * b0 + white * 0.0555;
+          b1 = 0.99332 * b1 + white * 0.075;
+          const rain = (b0 + b1) * 0.15;
+          const thunderRumble = Math.sin(2 * Math.PI * 45 * t) * (Math.sin(2 * Math.PI * 0.3 * t) > 0.7 ? 0.35 : 0.05);
+          sample = rain + thunderRumble;
+        } else if (key.includes('heavyrain')) {
+          b0 = 0.99886 * b0 + white * 0.06;
+          b1 = 0.99332 * b1 + white * 0.09;
+          sample = (b0 + b1 + white * 0.4) * 0.14;
+        } else if (key.includes('lightrain') || key.includes('tent')) {
+          b0 = 0.99886 * b0 + white * 0.04;
+          sample = (b0 + white * 0.2) * 0.07;
+        } else if (key.includes('rain')) {
+          b0 = 0.99886 * b0 + white * 0.0555;
+          b1 = 0.99332 * b1 + white * 0.075;
+          sample = (b0 + b1 + white * 0.3) * 0.09;
+        } else if (key.includes('waterfall')) {
+          last = (last + 0.1 * white) / 1.1;
+          sample = last * 0.6;
+        } else if (key.includes('ocean') || key.includes('deepsea') || key.includes('underwater')) {
           last = (last + 0.015 * white) / 1.015;
-          sample = last * 0.5;
-        } else if (type.includes('clock')) {
-          const isTick = (i % Math.floor(sampleRate * 0.5)) < 150;
-          sample = isTick ? (Math.random() * 0.5 - 0.25) : 0;
+          const swell = 0.5 + 0.5 * Math.sin(2 * Math.PI * 0.22 * t);
+          sample = last * 2.2 * swell;
+        } else if (key.includes('fire') || key.includes('camp')) {
+          last = (last + 0.02 * white) / 1.02;
+          const crackle = Math.random() < 0.005 ? (Math.random() * 0.9 - 0.2) : 0;
+          sample = (last * 1.1 + crackle) * 0.35;
+        } else if (key.includes('fan') || key.includes('airconditioner')) {
+          last = (last + 0.02 * white) / 1.02;
+          const hum = Math.sin(2 * Math.PI * 120 * t) * 0.08;
+          sample = (last * 0.6) + hum;
+        } else if (key.includes('wind')) {
+          const gust = 0.5 + 0.5 * Math.sin(2 * Math.PI * 0.15 * t);
+          last = (last + 0.025 * white) / 1.025;
+          sample = last * 0.8 * gust;
+        } else if (key.includes('clock')) {
+          const isTick = (i % Math.floor(sampleRate * 0.5)) < 120;
+          sample = isTick ? (Math.sin(2 * Math.PI * 1800 * t) * 0.4) : 0;
+        } else if (key.includes('keyboard')) {
+          const isClick = Math.random() < 0.001;
+          sample = isClick ? (Math.random() * 0.7 - 0.35) : 0;
+        } else if (key.includes('birds') || key.includes('countryside') || key.includes('park')) {
+          last = (last + 0.01 * white) / 1.01;
+          const chirp = Math.sin(2 * Math.PI * (2400 + 400 * Math.sin(2 * Math.PI * 6 * t)) * t) * (Math.random() < 0.003 ? 0.3 : 0);
+          sample = (last * 0.2) + chirp;
+        } else if (key.includes('waves') || key.includes('gamma') || key.includes('beta') || key.includes('alpha') || key.includes('theta') || key.includes('delta')) {
+          const diff = key.includes('gamma') ? 40 : key.includes('beta') ? 20 : key.includes('alpha') ? 10 : key.includes('theta') ? 6 : 2;
+          const tone = (Math.sin(2 * Math.PI * 200 * t) + Math.sin(2 * Math.PI * (200 + diff) * t)) * 0.15;
+          last = (last + 0.01 * white) / 1.01;
+          sample = (last * 0.25) + tone;
+        } else if (key.includes('brown')) {
+          last = (last + 0.02 * white) / 1.02;
+          sample = last * 1.5;
+        } else if (key.includes('pink')) {
+          b0 = 0.99886 * b0 + white * 0.0555;
+          b1 = 0.99332 * b1 + white * 0.075;
+          sample = (b0 + b1) * 0.3;
+        } else if (key.includes('white')) {
+          sample = white * 0.08;
         } else {
-          last = (last + 0.04 * white) / 1.04;
-          sample = last * 0.45;
+          last = (last + 0.025 * white) / 1.025;
+          sample = last * 0.5;
         }
+        
         const val = Math.max(-1, Math.min(1, sample));
         view.setInt16(44 + i * 2, val < 0 ? val * 0x8000 : val * 0x7FFF, true);
       }
       const blob = new Blob([buffer], { type: 'audio/wav' });
-      cache[type] = URL.createObjectURL(blob);
-      return cache[type];
+      cache[key] = URL.createObjectURL(blob);
+      return cache[key];
     };
   })();
 
@@ -580,32 +715,29 @@
     }
   }, 100);
 
-  // ===== ANIMATED THEMES PATCH (YOUTUBE EMBEDS) =====
-  const patchAnimatedThemes = () => {
+  // ===== SUPPORT DES THEMES VIDEO LOCAUX =====
+  const patchVideoThemes = () => {
     const catalog = window.Flocus?.themes?.catalog;
     if (!catalog) return;
-    if (catalog['loficafe-animated']) {
-      catalog['loficafe-animated'].type = 'youtube';
-      catalog['loficafe-animated'].videoId = 'jfKfPfyJRdk';
-      catalog['loficafe-animated'].isPlus = false;
-    }
-    if (catalog['Fireplace-animated']) {
-      catalog['Fireplace-animated'].type = 'youtube';
-      catalog['Fireplace-animated'].videoId = 'L_LUpnjgPso';
-      catalog['Fireplace-animated'].isPlus = false;
-    }
-    if (catalog['winter-animated']) {
-      catalog['winter-animated'].type = 'youtube';
-      catalog['winter-animated'].videoId = '0CtgzPIwJtA';
-      catalog['winter-animated'].isPlus = false;
-    }
+    const vThemes = [
+      { id: 'loficafe-animated', defaultSrc: 'resources/images/themes/f578c6b4e6af48261e67.mp4' },
+      { id: 'Fireplace-animated', defaultSrc: 'resources/images/themes/5f776353fd8c17bd56ca.mp4' },
+      { id: 'winter-animated', defaultSrc: 'resources/images/themes/6023b8988a11db1d420c.mp4' }
+    ];
+    vThemes.forEach(({ id, defaultSrc }) => {
+      const t = catalog[id];
+      if (t) {
+        t.type = 'video';
+        t.isPlus = false;
+        t.src = defaultSrc;
+      }
+    });
   };
-  patchAnimatedThemes();
+  patchVideoThemes();
   const themeChecker = setInterval(() => {
-    if (window.Flocus?.themes?.catalog?.['loficafe-animated']?.videoId) {
+    if (window.Flocus?.themes?.catalog?.['loficafe-animated']) {
+      patchVideoThemes();
       clearInterval(themeChecker);
-    } else {
-      patchAnimatedThemes();
     }
   }, 100);
 
