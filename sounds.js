@@ -1,4 +1,4 @@
-// ============================================
+﻿// ============================================
 // SOUNDS STUDIO - Fichier unique complet
 // Icônes + CSS + Composant
 // ============================================
@@ -1508,7 +1508,7 @@
           if (id === 'none') continue;
           sounds[id] = {
             name: s.name,
-            src: s.src,
+            src: s.src || id,
             emoji: s.emoji,
             tags: s.tags || [],
           };

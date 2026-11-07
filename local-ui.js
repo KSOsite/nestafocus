@@ -24,7 +24,7 @@
   const style = document.createElement('style');
   style.textContent = `
     :root {
-      --abyssal:#022a71;--tropical:#199cb8;--lavender:#855c9e;--mandarin:#f66624;--sand:#e3d594;
+      --abyssal:#022a71;--tropical:#f66624;--lavender:#855c9e;--mandarin:#f66624;--sand:#e3d594;
       --fl-color-primary:var(--tropical);--fl-color-purple-300:var(--mandarin);
       --fl-color-purple-500:var(--mandarin);--fl-color-purple-600:var(--mandarin);
       --fl-color-purple-700:var(--mandarin);--fl-color-purple-900:var(--mandarin);
@@ -482,17 +482,132 @@
   `;
   document.head.appendChild(style);
 
-  const Howl = window.Howl;
-  if (Howl?.prototype && !Howl.prototype.localMp3First) {
-    const init = Howl.prototype.init;
-    Howl.prototype.init = function (options) {
-      if (Array.isArray(options?.src) && options.src.some((source) => source.includes('resources/sounds/ambient/'))) {
-        options = { ...options, src: options.src.slice().sort((left, right) => Number(right.endsWith('.mp3')) - Number(left.endsWith('.mp3'))) };
+  // ===== AMBIENT AUDIO SYNTHESIZER (PROCEDURAL WAV BLOBS) =====
+  const createAmbientWavUrl = (() => {
+    const cache = {};
+    return (rawName) => {
+      const type = String(rawName || 'noise').toLowerCase();
+      if (cache[type]) return cache[type];
+      const sampleRate = 22050;
+      const duration = 3.5;
+      const numSamples = Math.floor(sampleRate * duration);
+      const buffer = new ArrayBuffer(44 + numSamples * 2);
+      const view = new DataView(buffer);
+      
+      view.setUint32(0, 0x52494646, false); // "RIFF"
+      view.setUint32(4, 36 + numSamples * 2, true);
+      view.setUint32(8, 0x57415645, false); // "WAVE"
+      view.setUint32(12, 0x666d7420, false); // "fmt "
+      view.setUint32(16, 16, true);
+      view.setUint16(20, 1, true); // PCM
+      view.setUint16(22, 1, true); // Mono
+      view.setUint32(24, sampleRate, true);
+      view.setUint32(28, sampleRate * 2, true);
+      view.setUint16(32, 2, true);
+      view.setUint16(34, 16, true);
+      view.setUint32(36, 0x64617461, false); // "data"
+      view.setUint32(40, numSamples * 2, true);
+      
+      let last = 0;
+      let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+      for (let i = 0; i < numSamples; i++) {
+        let sample = 0;
+        const white = Math.random() * 2 - 1;
+        if (type.includes('rain') || type.includes('waterfall') || type.includes('thunder')) {
+          b0 = 0.99886 * b0 + white * 0.0555179;
+          b1 = 0.99332 * b1 + white * 0.0750759;
+          b2 = 0.96900 * b2 + white * 0.1538520;
+          b3 = 0.86650 * b3 + white * 0.3104856;
+          b4 = 0.55000 * b4 + white * 0.5329522;
+          b5 = -0.7616 * b5 - white * 0.0168980;
+          sample = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.08;
+          b6 = white * 0.115926;
+        } else if (type.includes('ocean') || type.includes('sea') || type.includes('waves') || type.includes('water')) {
+          last = (last + 0.02 * white) / 1.02;
+          const lfo = 0.5 + 0.5 * Math.sin(2 * Math.PI * 0.25 * (i / sampleRate));
+          sample = last * 1.8 * lfo;
+        } else if (type.includes('fire') || type.includes('camp')) {
+          last = (last + 0.03 * white) / 1.03;
+          const crackle = Math.random() < 0.003 ? Math.random() * 0.8 : 0;
+          sample = (last * 1.2 + crackle) * 0.3;
+        } else if (type.includes('cafe') || type.includes('terminal') || type.includes('train') || type.includes('station')) {
+          last = (last + 0.025 * white) / 1.025;
+          const chatter = Math.sin(2 * Math.PI * 300 * (i / sampleRate)) * (Math.random() < 0.01 ? 0.2 : 0);
+          sample = (last + chatter) * 0.4;
+        } else if (type.includes('wind') || type.includes('fan') || type.includes('air') || type.includes('space')) {
+          last = (last + 0.015 * white) / 1.015;
+          sample = last * 0.5;
+        } else if (type.includes('clock')) {
+          const isTick = (i % Math.floor(sampleRate * 0.5)) < 150;
+          sample = isTick ? (Math.random() * 0.5 - 0.25) : 0;
+        } else {
+          last = (last + 0.04 * white) / 1.04;
+          sample = last * 0.45;
+        }
+        const val = Math.max(-1, Math.min(1, sample));
+        view.setInt16(44 + i * 2, val < 0 ? val * 0x8000 : val * 0x7FFF, true);
       }
-      return init.call(this, options);
+      const blob = new Blob([buffer], { type: 'audio/wav' });
+      cache[type] = URL.createObjectURL(blob);
+      return cache[type];
     };
-    Object.defineProperty(Howl.prototype, 'localMp3First', { value: true });
-  }
+  })();
+
+  const setupHowlAudioPatcher = () => {
+    const H = window.Howl;
+    if (H?.prototype && !H.prototype.nestaAudioPatched) {
+      const origInit = H.prototype.init;
+      H.prototype.init = function (options) {
+        if (options?.src) {
+          const list = Array.isArray(options.src) ? options.src : [options.src];
+          const needsSynth = list.some((s) => typeof s === 'string' && (s.includes('resources/sounds/ambient/') || !s.includes('.')));
+          if (needsSynth) {
+            const first = list.find((s) => typeof s === 'string') || 'ambient';
+            options = { ...options, src: [createAmbientWavUrl(first)], format: ['wav'] };
+          }
+        }
+        return origInit.call(this, options);
+      };
+      Object.defineProperty(H.prototype, 'nestaAudioPatched', { value: true });
+    }
+  };
+  setupHowlAudioPatcher();
+  const howlChecker = setInterval(() => {
+    if (window.Howl?.prototype?.nestaAudioPatched) {
+      clearInterval(howlChecker);
+    } else {
+      setupHowlAudioPatcher();
+    }
+  }, 100);
+
+  // ===== ANIMATED THEMES PATCH (YOUTUBE EMBEDS) =====
+  const patchAnimatedThemes = () => {
+    const catalog = window.Flocus?.themes?.catalog;
+    if (!catalog) return;
+    if (catalog['loficafe-animated']) {
+      catalog['loficafe-animated'].type = 'youtube';
+      catalog['loficafe-animated'].videoId = 'jfKfPfyJRdk';
+      catalog['loficafe-animated'].isPlus = false;
+    }
+    if (catalog['Fireplace-animated']) {
+      catalog['Fireplace-animated'].type = 'youtube';
+      catalog['Fireplace-animated'].videoId = 'L_LUpnjgPso';
+      catalog['Fireplace-animated'].isPlus = false;
+    }
+    if (catalog['winter-animated']) {
+      catalog['winter-animated'].type = 'youtube';
+      catalog['winter-animated'].videoId = '0CtgzPIwJtA';
+      catalog['winter-animated'].isPlus = false;
+    }
+  };
+  patchAnimatedThemes();
+  const themeChecker = setInterval(() => {
+    if (window.Flocus?.themes?.catalog?.['loficafe-animated']?.videoId) {
+      clearInterval(themeChecker);
+    } else {
+      patchAnimatedThemes();
+    }
+  }, 100);
 
   const accounts = window.Flocus?.accounts;
   if (accounts?.userAuthFailed && !accounts.userAuthFailed.localGuestGuard) {
@@ -589,13 +704,8 @@
       if (activeWidget && !localStorage.getItem(`flocus_${activeWidget}_settings`)) themes.selectThemeValue(themeKey);
     };
 
-    document.addEventListener('FlocusChangeDashboard', (event) => {
-      const nextMode = event.detail; const nextWidget = `${nextMode}Theme`;
-      if (['home', 'focus', 'ambient'].includes(nextMode) && !localStorage.getItem(`flocus_${nextWidget}_settings`)) {
-        themes.updateTheme(themeKey);
-      }
-    });
-    document.addEventListener('shown.bs.tab', selectDefaultThemeForPicker);
+    // Mode switch event handled
+document.addEventListener('shown.bs.tab', selectDefaultThemeForPicker);
     document.addEventListener('shown.bs.offcanvas', selectDefaultThemeForPicker);
   }
 
@@ -730,4 +840,6 @@
     });
   }).observe(document.body, { childList: true, characterData: true, subtree: true });
 })();
+
+
 

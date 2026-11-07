@@ -10287,7 +10287,7 @@
       customElements.define("flocus-notepad", ht);
       const mt = a.p + "resources/upgradeMusic.94603fc3.png",
         gt = a.p + "resources/upgradeSoundscapes.974c9777.png";
-      var vt = a(4196);
+      var vt = a(4196); (window.Howl = vt.Howl, window.Howler = vt.Howler);
       const yt = a.p + "resources/spotify.549fb9ce.svg",
         bt = a.p + "resources/youtube.af801823.svg",
         ft = a.p + "resources/appleMusic.bc248ac1.svg",
