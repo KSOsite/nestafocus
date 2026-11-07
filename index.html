@@ -3,14 +3,9 @@
     <head>
         <meta charset="utf-8">
         <script>
-            // Empêche la réécriture de l'URL (évite la perte du préfixe /nestafocus/ en navigation privée)
+            // Empêche l'altération de l'URL racine (conserve /nestafocus/ à la première visite et lors de la connexion)
             history.replaceState = function() {};
             history.pushState = function() {};
-            try {
-                if (!localStorage.getItem('flocus_onboarding')) {
-                    localStorage.setItem('flocus_onboarding', 'true');
-                }
-            } catch(e) {}
         </script>
         <title>NestaFocus</title>
         <meta name="description" content="Step into your personalized dashboard for focus and ambience, right in your browser."><meta name="robots" content="noindex">
