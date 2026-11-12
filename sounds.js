@@ -1,1570 +1,1081 @@
-﻿// ============================================
-// SOUNDS STUDIO - Fichier unique complet
-// Icônes + CSS + Composant
-// ============================================
 (() => {
   'use strict';
-  
-  const STORAGE_KEY = 'nestafocus_sounds_v3';
-  const PRESETS_KEY = 'nestafocus_sound_presets_v3';
-  const FAVORITES_KEY = 'nestafocus_music_favorites_v1';
+
+  const STATE_KEY = 'nestafocus_soundroom_v1';
+  const PRESETS_KEY = 'nestafocus_soundroom_presets_v1';
+  const FAVORITES_KEY = 'nestafocus_soundroom_favorites_v1';
   const MAX_ACTIVE = 5;
-  
-  // ============================================
-  // ICÔNES SVG
-  // ============================================
+  const SOUND_ID_ALIASES = { cc0_cafe: 'cafe' };
+  const CATEGORY_NAMES = {
+    Nature: 'Nature',
+    Weather: 'Météo',
+    Interior: 'Intérieur',
+    Lifestyle: 'Vie quotidienne',
+    Focus: 'Concentration',
+    Niche: 'Autres',
+  };
+  const PLAYLISTS = [
+    ['Lofi', '4Zjli1P13J5mmSCD5iKAXK'],
+    ['Rainy Day Lofi', '0owPbYZr8bqzFfpzLmP8UV'],
+    ['Paris Café', '0VvruOaNjMu1B57ZefMf7B'],
+    ['Focus Picks', '4wTxU32MgaTXDz1JlcH08C'],
+    ['Piano relaxant', '1IE734A2agfLVvkOcL02Al'],
+    ['Jazzhop', '2kzTQa3FcDDlJhhITcIBpX'],
+  ];
+  const CC0_SOUNDS = [
+    { id: 'cc0_rain_indoor', name: 'Rain from Indoors', title: 'Rain from Indoors', creator: 'samesamesame', source: 'https://freesound.org/people/samesamesame/sounds/242889', src: 'resources/sounds/cc0/rain-indoor.mp3', tags: ['Weather'] },
+    { id: 'cc0_short_rain', name: 'Short Rain Loop', title: 'Short Rain Loop', creator: 'dmk67', source: 'https://freesound.org/people/dmk67/sounds/392980', src: 'resources/sounds/cc0/short-rain.mp3', tags: ['Weather'] },
+    { id: 'cc0_ocean_waves', name: 'Ocean Waves', title: 'Ocean waves', creator: 'Rmutt', source: 'https://freesound.org/people/Rmutt/sounds/148283', src: 'resources/sounds/cc0/ocean-waves.mp3', tags: ['Nature'] },
+    { id: 'cc0_fireplace', name: 'Fireplace Crackles', title: 'Fireplace Crackles', creator: 'WavJunction.com', source: 'https://freesound.org/people/WavJunction.com/sounds/512685', src: 'resources/sounds/cc0/fireplace.mp3', tags: ['Interior'] },
+    { id: 'cafe', name: 'Bustling Café', title: 'People talking at cafe', creator: 'priesjensen', source: 'https://freesound.org/people/priesjensen/sounds/482990', src: 'resources/sounds/cc0/cafe.mp3', tags: ['Lifestyle'] },
+    { id: 'AirplaneCabin', name: 'Airplane Cabin', title: 'Airliner, Jet, Interior Ambience, Idle in flight', creator: 'Kinoton', source: 'https://freesound.org/people/Kinoton/sounds/438972', src: 'resources/sounds/cc0/airplane-cabin.mp3', tags: ['Lifestyle'] },
+    { id: 'ExamHall', name: 'Exam Hall', title: 'Murmur of kids entering a classroom with footsteps', creator: 'SSE Library', source: 'https://archive.org/details/SSE_Library_AMBIENCE', src: 'resources/sounds/cc0/classroom-ambience.mp3', tags: ['Interior'] },
+    { id: 'cc0_countryside', name: 'Countryside', title: 'Countryside', creator: 'brunoboselli', source: 'https://freesound.org/people/brunoboselli/sounds/458113', src: 'resources/sounds/cc0/countryside.mp3', tags: ['Nature'] },
+    { id: 'cc0_train', name: 'Train Interior', title: 'Train interior', creator: 'Yoyodaman234', source: 'https://freesound.org/people/Yoyodaman234/sounds/341208', src: 'resources/sounds/cc0/train-interior.mp3', tags: ['Lifestyle'] },
+    { id: 'cc0_birds', name: 'Birds in Spring', title: 'Birds in Spring', creator: 'BurghRecords', source: 'https://freesound.org/people/BurghRecords/sounds/463903', src: 'resources/sounds/cc0/birds-spring.mp3', tags: ['Nature'] },
+    { id: 'cc0_crickets', name: 'Crickets at Night', title: 'Crickets', creator: 'FunkApache', source: 'https://freesound.org/people/FunkApache/sounds/393389', src: 'resources/sounds/cc0/crickets.mp3', tags: ['Nature'] },
+    { id: 'cc0_keyboard', name: 'Computer Keyboard', title: 'Computer keyboard loop', creator: 'cabled_mess', source: 'https://freesound.org/people/cabled_mess/sounds/361639', src: 'resources/sounds/cc0/keyboard.mp3', tags: ['Focus'] },
+    { id: 'cc0_airport', name: 'Airport Ambience', title: 'Airport ambience', creator: 'Lowcat_Sound', source: 'https://freesound.org/people/Lowcat_Sound/sounds/535074', src: 'resources/sounds/cc0/airport.mp3', tags: ['Lifestyle'] },
+    { id: 'cc0_whales', name: 'Diving with Whales', title: 'Diving with whales', creator: 'KEVOY', source: 'https://freesound.org/people/KEVOY/sounds/82325', src: 'resources/sounds/cc0/diving-whales.mp3', tags: ['Nature'] },
+    { id: 'cc0_bowling', name: 'Bowling Alley', title: 'Bowling Alley Ambience', creator: 'moviebuffgavin', source: 'https://freesound.org/people/moviebuffgavin/sounds/398078', src: 'resources/sounds/cc0/bowling.mp3', tags: ['Niche'] },
+    { id: 'cc0_air_conditioner', name: 'Air Conditioner Fan', title: 'Air Conditioner Fan Hum', creator: 'MATRIXXX_', source: 'https://freesound.org/people/MATRIXXX_/sounds/515859', src: 'resources/sounds/cc0/air-conditioner.mp3', tags: ['Interior'] },
+    { id: 'cc0_kitchen', name: 'Diner Kitchen', title: 'Diner kitchen', creator: 'ViaTorci', source: 'https://freesound.org/people/ViaTorci/sounds/66790', src: 'resources/sounds/cc0/diner-kitchen.mp3', tags: ['Interior'] },
+    { id: 'cc0_vinyl', name: 'Vinyl Record Crackle', title: 'Vinyl Record Crackle Loop', creator: 'OwlStorm', source: 'https://freesound.org/people/OwlStorm/sounds/371583', src: 'resources/sounds/cc0/vinyl-crackle.mp3', tags: ['Niche'] },
+    { id: 'cc0_clock', name: 'Ticking Clock', title: 'Loopable Ticking Clock', creator: 'OwlStorm', source: 'https://freesound.org/people/OwlStorm/sounds/212181', src: 'resources/sounds/cc0/ticking-clock.mp3', tags: ['Interior'] },
+    { id: 'cc0_static', name: 'Radio Static', title: 'Hard static loop', creator: 'dotY21', source: 'https://freesound.org/people/dotY21/sounds/395804', src: 'resources/sounds/cc0/radio-static.mp3', tags: ['Focus', 'Niche'] },
+    { id: 'cc0_city', name: 'Boston Street Morning', title: 'Boston Street Morning.wav', creator: 'Dlam1991', source: 'https://freesound.org/people/Dlam1991/sounds/234080', src: 'resources/sounds/cc0/boston-morning.mp3', tags: ['Lifestyle'] },
+    { id: 'cc0_campfire', name: 'Campfire Loop', title: 'Ambiance_Campfire_Loop_Stereo.wav', creator: 'Nox_Sound', source: 'https://freesound.org/people/Nox_Sound/sounds/558967', src: 'resources/sounds/cc0/campfire.mp3', tags: ['Nature'] },
+    { id: 'cc0_wind', name: 'Wind in the Trees', title: 'wind_forest_08_strong_l_01.wav', creator: 'teadrinker', source: 'https://freesound.org/people/teadrinker/sounds/403051', src: 'resources/sounds/cc0/wind-trees.mp3', tags: ['Nature', 'Weather'] },
+  ].map((sound) => ({
+    ...sound,
+    sourceUrl: sound.source,
+    description: `${sound.title} — ${sound.creator} · CC0 1.0`,
+    license: 'CC0 1.0',
+    openSource: true,
+    player: null,
+  }));
   const ICONS = {
-    // === Sons ===
-    rain: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 13v8"/><path d="M8 13v8"/><path d="M12 15v8"/><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/></svg>',
-    ocean: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>',
-    cafe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>',
-    airplane: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>',
-    exam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" x2="15" y1="13" y2="13"/><line x1="9" x2="15" y1="17" y2="17"/><line x1="9" x2="13" y1="9" y2="9"/></svg>',
-    train: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="3" rx="2"/><path d="M4 11h16"/><path d="M12 3v8"/><path d="m8 19-2 3"/><path d="m16 19 2 3"/></svg>',
-    library: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>',
-    taxi: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10 2h4"/><path d="m21 8-2 2-1.5-3.7A2 2 0 0 0 15.646 5H8.4a2 2 0 0 0-1.903 1.257L5 10 3 8"/><rect width="18" height="8" x="3" y="10" rx="2"/><path d="M5 18v2"/><path d="M19 18v2"/></svg>',
-    rainLight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 13v8"/><path d="M8 13v8"/><path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"/></svg>',
-    rainHeavy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 14v6"/><path d="M8 14v6"/><path d="M12 16v6"/></svg>',
-    thunderstorm: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 .5 8.973"/><path d="m13 12-3 5h4l-3 5"/></svg>',
-    fireplace: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
-    campfire: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v3"/><path d="m5.636 5.636 2.122 2.122"/><path d="m18.364 5.636-2.122 2.122"/><path d="M10 17h4"/><path d="M6 21h12"/><path d="M8 17c0-4 4-6 4-10 0 4 4 6 4 10"/></svg>',
-    office: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg>',
-    wind: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/></svg>',
-    whiteNoise: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h2l2-6 2 12 2-9 2 6 2-3 2 2 2-4 2 6 2-3 2 1"/></svg>',
-    pinkNoise: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>',
-    brownNoise: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h3l3-6 3 12 3-9 3 6"/></svg>',
-    binaural: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="3"/><circle cx="15" cy="12" r="3"/><path d="M9 15v3"/><path d="M15 15v3"/><path d="M9 6v3"/><path d="M15 6v3"/></svg>',
-    streetCafe: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><path d="M6 2v2"/><path d="M10 2v2"/><path d="M14 2v2"/></svg>',
-    countryside: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>',
-    deepSea: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M2 12h4"/><path d="M18 12h4"/><circle cx="12" cy="12" r="2"/></svg>',
-    airConditioner: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="8" x="2" y="2" rx="2"/><path d="M6 6h.01"/><path d="M10 6h.01"/><path d="M14 6h.01"/><path d="M18 6h.01"/><path d="M6 14v6"/><path d="M12 14v6"/><path d="M18 14v6"/></svg>',
-    fan: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="2"/><path d="M12 10c0-3 2-5 4-5s3 1 3 3-2 3-5 3"/><path d="M14 12c3 0 5 2 5 4s-1 3-3 3-3-2-3-5"/><path d="M12 14c0 3-2 5-4 5s-3-1-3-3 2-3 5-3"/><path d="M10 12c-3 0-5-2-5-4s1-3 3-3 3 2 3 5"/></svg>',
-    summerNight: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>',
-    park: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 12h6v9h6v-9h6z"/></svg>',
-    airport: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12h-8"/><path d="M3 12h4"/><circle cx="14" cy="12" r="3"/><path d="M14 9V6"/><path d="M14 15v3"/></svg>',
-    underwater: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg>',
-    birds: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M16 7h.01"/><path d="M3.4 18H12a8 8 0 0 0 8-8V7a4 4 0 0 0-7.28-2.3L2 20"/><path d="m20 7 2 .5-2 .5"/><path d="M10 18v3"/><path d="M14 17.75V21"/><path d="M7 18a6 6 0 0 0 3.84-10.61"/></svg>',
-    waterfall: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16"/><path d="M4 8h16"/><path d="M8 12h8"/><path d="M10 16h4"/><path d="M11 20h2"/></svg>',
-    rainTent: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 21 12 3l8.5 18"/><path d="M12 3v18"/><path d="M6 12h12"/><path d="M8 8h8"/></svg>',
-    keyboard: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><path d="M6 10h0"/><path d="M10 10h0"/><path d="M14 10h0"/><path d="M18 10h0"/><path d="M6 14h0"/><path d="M18 14h0"/><path d="M10 14h4"/></svg>',
-    whales: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M4 18c4 0 8-2 8-6"/><path d="M20 18c-4 0-8-2-8-6"/><circle cx="9" cy="7" r="1"/></svg>',
-    kitchen: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg>',
-    bowling: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="9" cy="9" r="1"/><circle cx="15" cy="9" r="1"/><circle cx="12" cy="14" r="1"/></svg>',
-    recordPlayer: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="2"/><path d="M12 12 20 4"/><circle cx="20" cy="4" r="1"/></svg>',
-    outerSpace: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3"/><path d="M12 19v3"/><path d="M2 12h3"/><path d="M19 12h3"/><path d="m5 5 2 2"/><path d="m17 17 2 2"/><path d="m19 5-2 2"/><path d="m7 17-2 2"/></svg>',
-    clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
-    cat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.07 1 2.24 1 3.44C21 17.9 16.97 21 12 21s-9-3-9-7.56c0-1.25.5-2.4 1-3.44 0 0-1.89-6.42-.5-7 1.39-.58 4.72.23 6.5 2.23A9.04 9.04 0 0 1 12 5Z"/><path d="M8 14v.5"/><path d="M16 14v.5"/><path d="M11.25 16.25h1.5L12 17l-.75-.75Z"/></svg>',
-    
-    // === UI ===
-    headphones: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg>',
-    play: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M8 5v14l11-7z"/></svg>',
-    pause: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>',
-    stop: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="6" width="12" height="12" rx="1"/></svg>',
-    close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>',
-    search: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
-    dice: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 8h.01"/><path d="M16 8h.01"/><path d="M8 16h.01"/><path d="M16 16h.01"/><path d="M12 12h.01"/></svg>',
-    save: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>',
-    musicNote: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
-    plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>',
-    
-    // === Plateformes ===
-    spotify: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>',
-    youtube: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>',
-    youtubeMusic: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0C5.376 0 0 5.376 0 12s5.376 12 12 12 12-5.376 12-12S18.624 0 12 0zm0 19.104c-3.924 0-7.104-3.18-7.104-7.104S8.076 4.896 12 4.896s7.104 3.18 7.104 7.104-3.18 7.104-7.104 7.104zM9.684 15.072V8.928L15.144 12l-5.46 3.072z"/></svg>',
-    appleMusic: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M19.5 3.5c-.5-.1-1-.2-1.5-.2-2.9 0-5.3 2.1-5.7 4.9-.1.4-.1.8-.1 1.2v6.1c-.6-.4-1.4-.6-2.2-.6-2.2 0-4 1.8-4 4s1.8 4 4 4 4-1.8 4-4v-6.1c.6.4 1.4.6 2.2.6 2.2 0 4-1.8 4-4 0-2-1.5-3.6-3.4-3.9z"/></svg>',
-    soundcloud: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M1.175 12.225c-.051 0-.094.046-.101.096l-.203 2.766.203 2.644c.007.05.05.096.101.096s.095-.046.101-.096l.234-2.644-.234-2.766c-.006-.05-.05-.096-.101-.096zm1.09-1.318c-.066 0-.118.058-.125.122l-.271 4.076.271 2.604c.007.064.059.122.125.122s.118-.058.125-.122l.305-2.604-.305-4.076c-.007-.064-.059-.122-.125-.122zm1.148-.767c-.077 0-.14.068-.147.144l-.298 4.857.298 2.567c.007.076.07.144.147.144s.14-.068.147-.144l.317-2.567-.317-4.857c-.007-.076-.07-.144-.147-.144zm1.194-.565c-.089 0-.161.078-.169.166l-.318 5.422.318 2.53c.008.088.08.166.169.166s.161-.078.169-.166l.335-2.53-.335-5.422c-.008-.088-.08-.166-.169-.166zm1.262-.223c-.101 0-.183.09-.191.189l-.339 5.645.339 2.513c.008.099.09.189.191.189s.183-.09.191-.189l.346-2.513-.346-5.645c-.008-.099-.09-.189-.191-.189zm1.273 5.84l.353 2.498c.008.109.1.209.211.209s.203-.1.211-.209l.36-2.498-.36-5.757c-.008-.109-.1-.209-.211-.209s-.203.1-.211.209l-.353 5.757zm1.351.067l.367 2.444c.008.12.111.231.234.231s.226-.111.234-.231l.374-2.444-.374-5.91c-.008-.12-.111-.231-.234-.231s-.226.111-.234.231l-.367 5.91zm1.396.054l.381 2.396c.009.131.121.253.255.253s.246-.122.255-.253l.388-2.396-.388-6.06c-.009-.131-.121-.253-.255-.253s-.246.122-.255.253l-.381 6.06zm1.42.03l.388 2.366c.009.141.131.273.277.273s.268-.132.277-.273l.395-2.366-.395-6.09c-.009-.141-.131-.273-.277-.273s-.268.132-.277.273l-.388 6.09zM15.75 3.5c-.9 0-1.8.2-2.6.5-.2.1-.3.3-.3.5v10.6c0 .2.1.4.4.5.5.1 1 .1 1.5.1 4.4 0 8-3.6 8-8s-3.6-8-7-8z"/></svg>',
-    amazonMusic: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.6 0 12 0zm-1.5 14.5c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5c0-1.4 1.1-2.5 2.5-2.5.5 0 1 .1 1.3.4V8.7l5.3-1.1v6.9c0 1.4-1.1 2.5-2.5 2.5s-2.5-1.1-2.5-2.5c0-1.4 1.1-2.5 2.5-2.5.5 0 1 .1 1.3.4v-1.9l-2.9.6v2.9z"/></svg>',
+    sound: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4m4-8v12m4-15v18m4-14v10m4-7v4"/></svg>',
+    play: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 10 6-10 6z" fill="currentColor" stroke="none"/></svg>',
+    pause: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6v12m8-12v12"/></svg>',
+    stop: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="7" width="10" height="10" rx="1" fill="currentColor" stroke="none"/></svg>',
+    close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>',
+    search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.3"/><path d="m16 16 4 4"/></svg>',
+    music: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l11-2v13M9 18c0 1.1-1.3 2-3 2s-3-.9-3-2 1.3-2 3-2 3 .9 3 2Zm11-2c0 1.1-1.3 2-3 2s-3-.9-3-2 1.3-2 3-2 3 .9 3 2Z"/></svg>',
+    timer: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6m-3 0v3"/></svg>',
+    shuffle: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 3 4 4-4 4M4 7h3c5 0 5 10 10 10h3m-4-4 4 4-4 4M4 17h3c1.4 0 2.4-1.1 3.2-2.6M14 9.6c.8-1.5 1.8-2.6 3.2-2.6h3"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg>',
+    link: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.1 0l2-2A5 5 0 0 0 12 3.9l-1.1 1.1M14 11a5 5 0 0 0-7.1 0l-2 2A5 5 0 0 0 12 20.1l1.1-1.1"/></svg>',
   };
-  
-  // ============================================
-  // MAPPING SON → ICÔNE
-  // ============================================
-  const SOUND_ICON_MAP = {
-    rain: 'rain',
-    ocean: 'ocean',
-    cafe: 'cafe',
-    AirplaneCabin: 'airplane',
-    ExamHall: 'exam',
-    CommuterTrain: 'train',
-    JapaneseLibrary: 'library',
-    NYCMorning: 'taxi',
-    LightRain: 'rainLight',
-    HeavyRain: 'rainHeavy',
-    Thunderstorm: 'thunderstorm',
-    Fireplace: 'fireplace',
-    Campfire: 'campfire',
-    Office: 'office',
-    Wind: 'wind',
-    WhiteNoise: 'whiteNoise',
-    PinkNoise: 'pinkNoise',
-    BrownNoise: 'brownNoise',
-    WavesGamma: 'binaural',
-    WavesBeta: 'binaural',
-    WavesAlpha: 'binaural',
-    WavesTheta: 'binaural',
-    WavesDelta: 'binaural',
-    StreetCafe: 'streetCafe',
-    CountrysideMorning: 'countryside',
-    DeepSea: 'deepSea',
-    AirConditioner: 'airConditioner',
-    RoomFan: 'fan',
-    SummerNight: 'summerNight',
-    CentralPark: 'park',
-    AirportTerminal: 'airport',
-    Underwater: 'underwater',
-    BirdsInWoods: 'birds',
-    Waterfall: 'waterfall',
-    LightRainOnTent: 'rainTent',
-    LaptopKeyboard: 'keyboard',
-    Whales: 'whales',
-    HomeKitchen: 'kitchen',
-    BowlingAlley: 'bowling',
-    RecordPlayerStatic: 'recordPlayer',
-    OuterSpaceRumble: 'outerSpace',
-    ClockTicking: 'clock',
-    CatPurr: 'cat',
-  };
-  
-  // ============================================
-  // PLAYLISTS PRÉDÉFINIES
-  // ============================================
-  const PLAYLISTS = {
-    lofi: { name: 'Lofi', uri: 'spotify:playlist:4Zjli1P13J5mmSCD5iKAXK' },
-    rainylofi: { name: 'Rainy Day Lofi', uri: 'spotify:playlist:0owPbYZr8bqzFfpzLmP8UV' },
-    pariscafe: { name: 'Paris Café', uri: 'spotify:playlist:0VvruOaNjMu1B57ZefMf7B' },
-    flocuspicks: { name: 'Focus Picks', uri: 'spotify:playlist:4wTxU32MgaTXDz1JlcH08C' },
-    relaxingpiano: { name: 'Relaxing Piano', uri: 'spotify:playlist:1IE734A2agfLVvkOcL02Al' },
-    games: { name: 'Video Game Music', uri: 'spotify:playlist:022leh1qff2ArTYAAocO9i' },
-    jazzhop: { name: 'Jazzhop', uri: 'spotify:playlist:2kzTQa3FcDDlJhhITcIBpX' },
-    holidaylofi: { name: 'Holiday Lofi', uri: 'spotify:playlist:0MjjGoktVwQ9npk9almPWn' },
-  };
-  
-  // ============================================
-  // CSS (injecté dans le head)
-  // ============================================
-  const STYLE_ID = 'nestafocus-sounds-styles';
-  
-  function injectStyles() {
-    if (document.getElementById(STYLE_ID)) return;
-    
-    const style = document.createElement('style');
-    style.id = STYLE_ID;
-    style.textContent = `
-      /* ===== OVERLAY ===== */
-      .sounds-studio-overlay {
-        position: fixed; inset: 0;
-        background: rgba(0,0,0,0.5);
-        backdrop-filter: blur(8px);
-        z-index: 999;
-        opacity: 0; visibility: hidden;
-        transition: opacity 0.3s ease, visibility 0.3s ease;
-      }
-      .sounds-studio-overlay.show { opacity: 1; visibility: visible; }
-      
-      /* ===== MODAL ===== */
-      .sounds-studio {
-        position: fixed; top: 50%; left: 50%;
-        transform: translate(-50%,-50%) scale(0.95);
-        width: min(900px, 92vw); height: min(680px, 88vh);
-        background: rgba(20,20,25,0.85);
-        backdrop-filter: blur(24px) saturate(120%);
-        -webkit-backdrop-filter: blur(24px) saturate(120%);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 20px;
-        z-index: 1000;
-        display: flex; flex-direction: column;
-        overflow: hidden;
-        opacity: 0; visibility: hidden;
-        transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s cubic-bezier(0.4,0,0.2,1);
-        box-shadow: 0 20px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.05);
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        color: #fff;
-      }
-      .sounds-studio.show {
-        opacity: 1; visibility: visible;
-        transform: translate(-50%,-50%) scale(1);
-      }
-      
-      /* ===== HEADER ===== */
-      .ss-header {
-        display: flex; align-items: center; gap: 0.75rem;
-        padding: 1.25rem 1.5rem;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        flex-shrink: 0;
-      }
-      .ss-header-icon {
-        width: 36px; height: 36px;
-        border-radius: 10px;
-        background: linear-gradient(135deg,#f66624,#ff8a4c);
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
-        box-shadow: 0 4px 12px rgba(246,102,36,0.3);
-      }
-      .ss-header-icon svg { width: 20px; height: 20px; stroke: #fff; }
-      .ss-header-text { flex: 1; min-width: 0; }
-      .ss-header-text h2 {
-        font-size: 1.125rem; font-weight: 700;
-        margin: 0; letter-spacing: -0.02em; color: #fff;
-      }
-      .ss-header-text p {
-        font-size: 0.8125rem; color: rgba(255,255,255,0.5);
-        margin: 0.125rem 0 0 0;
-      }
-      .ss-close {
-        width: 32px; height: 32px;
-        border-radius: 8px;
-        background: rgba(255,255,255,0.05);
-        border: none;
-        color: rgba(255,255,255,0.6);
-        cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        transition: all 0.15s ease;
-        flex-shrink: 0;
-      }
-      .ss-close:hover { background: rgba(255,255,255,0.1); color: #fff; }
-      .ss-close svg { width: 18px; height: 18px; }
-      
-      /* ===== TABS ===== */
-      .ss-tabs {
-        display: flex; gap: 0.25rem;
-        padding: 0 1.5rem;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        flex-shrink: 0;
-      }
-      .ss-tab {
-        position: relative;
-        padding: 0.875rem 1rem;
-        background: transparent; border: none;
-        color: rgba(255,255,255,0.5);
-        font-size: 0.875rem; font-weight: 600;
-        font-family: inherit; cursor: pointer;
-        transition: color 0.15s ease;
-        display: flex; align-items: center; gap: 0.5rem;
-      }
-      .ss-tab:hover { color: rgba(255,255,255,0.8); }
-      .ss-tab.active { color: #fff; }
-      .ss-tab.active::after {
-        content: ""; position: absolute;
-        bottom: -1px; left: 0; right: 0; height: 2px;
-        background: linear-gradient(90deg,#f66624,#ff8a4c);
-        border-radius: 2px 2px 0 0;
-      }
-      .ss-tab svg { width: 16px; height: 16px; }
-      
-      .ss-tab-content { display: none; flex: 1; overflow: hidden; flex-direction: column; }
-      .ss-tab-content.active { display: flex; }
-      
-      /* ===== TOOLBAR ===== */
-      .ss-toolbar {
-        padding: 1rem 1.5rem;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        flex-shrink: 0;
-        display: flex; flex-direction: column; gap: 0.75rem;
-      }
-      .ss-search {
-        display: flex; align-items: center; gap: 0.5rem;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 10px;
-        padding: 0.5rem 0.75rem;
-        transition: border-color 0.15s ease;
-      }
-      .ss-search:focus-within { border-color: rgba(246,102,36,0.5); }
-      .ss-search svg { width: 16px; height: 16px; stroke: rgba(255,255,255,0.4); flex-shrink: 0; }
-      .ss-search input {
-        flex: 1; background: transparent; border: none; outline: none;
-        color: #fff; font-size: 0.875rem; font-family: inherit;
-      }
-      .ss-search input::placeholder { color: rgba(255,255,255,0.35); }
-      .ss-filters { display: flex; gap: 0.375rem; flex-wrap: wrap; }
-      .ss-chip {
-        padding: 0.375rem 0.75rem;
-        border-radius: 100px;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: rgba(255,255,255,0.6);
-        font-size: 0.75rem; font-weight: 500;
-        cursor: pointer; transition: all 0.15s ease;
-        white-space: nowrap;
-      }
-      .ss-chip:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.9); }
-      .ss-chip.active {
-        background: linear-gradient(135deg,#f66624,#ff8a4c);
-        border-color: transparent; color: #fff;
-        box-shadow: 0 2px 8px rgba(246,102,36,0.3);
-      }
-      
-      /* ===== BODY ===== */
-      .ss-body {
-        flex: 1; overflow-y: auto;
-        padding: 1rem 1.5rem;
-        display: flex; flex-direction: column; gap: 1rem;
-      }
-      .ss-body::-webkit-scrollbar { width: 6px; }
-      .ss-body::-webkit-scrollbar-track { background: transparent; }
-      .ss-body::-webkit-scrollbar-thumb {
-        background: rgba(255,255,255,0.15); border-radius: 3px;
-      }
-      .ss-body::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
-      
-      /* ===== GRILLE ===== */
-      .ss-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill,minmax(140px,1fr));
-        gap: 0.75rem;
-      }
-      .ss-sound {
-        position: relative;
-        display: flex; flex-direction: column; align-items: center;
-        gap: 0.5rem; padding: 1rem 0.75rem;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.06);
-        border-radius: 12px;
-        cursor: pointer;
-        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-        text-align: center; user-select: none;
-      }
-      .ss-sound:hover {
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.12);
-        transform: translateY(-2px);
-      }
-      .ss-sound.active {
-        background: linear-gradient(135deg,rgba(246,102,36,0.15),rgba(255,138,76,0.1));
-        border-color: rgba(246,102,36,0.5);
-        box-shadow: 0 4px 16px rgba(246,102,36,0.2);
-      }
-      .ss-sound.active::after {
-        content: ""; position: absolute; inset: -1px;
-        border-radius: 12px;
-        border: 1px solid rgba(246,102,36,0.5);
-        animation: ss-pulse 2s ease-in-out infinite;
-        pointer-events: none;
-      }
-      @keyframes ss-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-      .ss-sound-icon {
-        width: 40px; height: 40px;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 10px;
-        background: rgba(255,255,255,0.05);
-        transition: all 0.2s ease;
-      }
-      .ss-sound.active .ss-sound-icon { background: rgba(246,102,36,0.2); }
-      .ss-sound-icon svg {
-        width: 22px; height: 22px;
-        stroke: rgba(255,255,255,0.7); fill: none; stroke-width: 1.75;
-        transition: stroke 0.2s ease;
-      }
-      .ss-sound.active .ss-sound-icon svg { stroke: #ff8a4c; }
-      .ss-sound-name {
-        font-size: 0.75rem; font-weight: 500;
-        color: rgba(255,255,255,0.8); line-height: 1.3;
-        max-width: 100%; overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-      .ss-sound.active .ss-sound-name { color: #fff; font-weight: 600; }
-      
-      /* ===== ACTIFS ===== */
-      .ss-active-section {
-        display: flex; flex-direction: column; gap: 0.5rem;
-        padding-top: 0.5rem;
-        border-top: 1px solid rgba(255,255,255,0.06);
-      }
-      .ss-active-header {
-        display: flex; align-items: center; justify-content: space-between;
-        padding: 0 0.25rem;
-      }
-      .ss-active-header h3 {
-        font-size: 0.75rem; font-weight: 700;
-        text-transform: uppercase; letter-spacing: 0.08em;
-        color: rgba(255,255,255,0.4); margin: 0;
-      }
-      .ss-active-count {
-        font-size: 0.6875rem; font-weight: 600;
-        color: rgba(255,255,255,0.5);
-        padding: 0.125rem 0.5rem;
-        border-radius: 100px;
-        background: rgba(255,255,255,0.05);
-      }
-      .ss-active-count.max { color: #ff8a4c; background: rgba(246,102,36,0.15); }
-      .ss-active-list { display: flex; flex-direction: column; gap: 0.375rem; }
-      .ss-active-item {
-        display: flex; align-items: center; gap: 0.75rem;
-        padding: 0.5rem 0.75rem;
-        background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.06);
-        border-radius: 10px;
-        animation: ss-slide-in 0.25s ease;
-      }
-      @keyframes ss-slide-in {
-        from { opacity: 0; transform: translateY(-4px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .ss-active-icon {
-        width: 28px; height: 28px;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 8px;
-        background: rgba(246,102,36,0.15);
-        flex-shrink: 0;
-      }
-      .ss-active-icon svg {
-        width: 16px; height: 16px;
-        stroke: #ff8a4c; fill: none; stroke-width: 1.75;
-      }
-      .ss-active-name {
-        flex: 1; font-size: 0.8125rem; font-weight: 500;
-        color: #fff; min-width: 0;
-        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      }
-      .ss-active-volume {
-        width: 100px; height: 4px;
-        border-radius: 2px;
-        background: rgba(255,255,255,0.1);
-        position: relative; cursor: pointer; flex-shrink: 0;
-      }
-      .ss-active-volume-fill {
-        position: absolute; top: 0; left: 0; height: 100%;
-        border-radius: 2px;
-        background: linear-gradient(90deg,#f66624,#ff8a4c);
-        transition: width 0.1s ease; pointer-events: none;
-      }
-      .ss-active-volume-thumb {
-        position: absolute; top: 50%;
-        transform: translate(-50%,-50%);
-        width: 12px; height: 12px;
-        border-radius: 50%; background: #fff;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        pointer-events: none; opacity: 0;
-        transition: opacity 0.15s ease;
-      }
-      .ss-active-volume:hover .ss-active-volume-thumb { opacity: 1; }
-      .ss-active-remove {
-        width: 24px; height: 24px;
-        border-radius: 6px; background: transparent; border: none;
-        color: rgba(255,255,255,0.4); cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        transition: all 0.15s ease; flex-shrink: 0;
-      }
-      .ss-active-remove:hover { background: rgba(255,59,48,0.15); color: #ff3b30; }
-      .ss-active-remove svg { width: 14px; height: 14px; }
-      .ss-empty {
-        padding: 2rem 1rem; text-align: center;
-        color: rgba(255,255,255,0.3); font-size: 0.8125rem;
-      }
-      
-      /* ===== FOOTER ===== */
-      .ss-footer {
-        display: flex; align-items: center; gap: 0.5rem;
-        padding: 1rem 1.5rem;
-        border-top: 1px solid rgba(255,255,255,0.06);
-        background: rgba(0,0,0,0.2);
-        flex-shrink: 0;
-      }
-      .ss-btn {
-        display: inline-flex; align-items: center; gap: 0.5rem;
-        padding: 0.625rem 1rem; border-radius: 10px;
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.08);
-        color: rgba(255,255,255,0.8);
-        font-size: 0.8125rem; font-weight: 500;
-        font-family: inherit; cursor: pointer;
-        transition: all 0.15s ease; white-space: nowrap;
-      }
-      .ss-btn:hover:not(:disabled) {
-        background: rgba(255,255,255,0.1); color: #fff;
-        border-color: rgba(255,255,255,0.15);
-      }
-      .ss-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-      .ss-btn.primary {
-        background: linear-gradient(135deg,#f66624,#ff8a4c);
-        border-color: transparent; color: #fff;
-        box-shadow: 0 4px 12px rgba(246,102,36,0.3);
-      }
-      .ss-btn.primary:hover:not(:disabled) {
-        background: linear-gradient(135deg,#ff7a3d,#ff9a5c);
-        box-shadow: 0 6px 16px rgba(246,102,36,0.4);
-      }
-      .ss-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
-      .ss-btn-spacer { flex: 1; }
-      
-      /* ===== PRESETS ===== */
-      .ss-preset-menu {
-        position: absolute; bottom: 100%; left: 0;
-        margin-bottom: 0.5rem; min-width: 220px;
-        background: rgba(30,30,35,0.98);
-        backdrop-filter: blur(16px);
-        border: 1px solid rgba(255,255,255,0.1);
-        border-radius: 12px;
-        padding: 0.5rem;
-        box-shadow: 0 12px 32px rgba(0,0,0,0.5);
-        opacity: 0; visibility: hidden;
-        transform: translateY(4px);
-        transition: all 0.2s ease;
-        z-index: 10;
-      }
-      .ss-preset-menu.show {
-        opacity: 1; visibility: visible; transform: translateY(0);
-      }
-      .ss-preset-item {
-        display: flex; align-items: center; gap: 0.5rem;
-        padding: 0.5rem 0.625rem; border-radius: 8px;
-        cursor: pointer; transition: background 0.15s ease;
-        font-size: 0.8125rem;
-      }
-      .ss-preset-item:hover { background: rgba(255,255,255,0.08); }
-      .ss-preset-item-icon { display: flex; gap: 0.125rem; flex-shrink: 0; }
-      .ss-preset-item-icon svg {
-        width: 14px; height: 14px;
-        stroke: #ff8a4c; fill: none; stroke-width: 2;
-      }
-      .ss-preset-item-name {
-        flex: 1; color: #fff;
-        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      }
-      .ss-preset-item-remove {
-        width: 20px; height: 20px; border-radius: 5px;
-        background: transparent; border: none;
-        color: rgba(255,255,255,0.3); cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
-      }
-      .ss-preset-item-remove:hover { background: rgba(255,59,48,0.15); color: #ff3b30; }
-      .ss-preset-item-remove svg { width: 12px; height: 12px; }
-      .ss-preset-empty {
-        padding: 1rem; text-align: center;
-        color: rgba(255,255,255,0.4); font-size: 0.75rem;
-      }
-      
-      /* ===== MUSIC LAYOUT ===== */
-      .ss-music-layout {
-        display: grid; grid-template-columns: 1fr 1fr;
-        gap: 1rem; padding: 1rem 1.5rem;
-        flex: 1; overflow: hidden; min-height: 0;
-      }
-      .ss-music-left, .ss-music-right {
-        display: flex; flex-direction: column; gap: 1rem;
-        min-height: 0; overflow-y: auto;
-      }
-      .ss-music-right { overflow: hidden; }
-      .ss-section { display: flex; flex-direction: column; gap: 0.75rem; }
-      .ss-section-header {
-        display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
-      }
-      .ss-section-header h3 {
-        font-size: 0.8125rem; font-weight: 700;
-        text-transform: uppercase; letter-spacing: 0.06em;
-        color: rgba(255,255,255,0.5); margin: 0;
-      }
-      .ss-count {
-        font-size: 0.6875rem; color: rgba(255,255,255,0.4);
-        padding: 0.125rem 0.5rem; border-radius: 100px;
-        background: rgba(255,255,255,0.05);
-      }
-      .ss-playlists-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill,minmax(120px,1fr));
-        gap: 0.5rem;
-      }
-      .ss-playlist {
-        display: flex; flex-direction: column; align-items: center;
-        gap: 0.375rem; padding: 0.75rem 0.5rem;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.06);
-        border-radius: 10px; cursor: pointer;
-        transition: all 0.15s ease; text-align: center;
-      }
-      .ss-playlist:hover {
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.12);
-        transform: translateY(-2px);
-      }
-      .ss-playlist.active {
-        background: linear-gradient(135deg,rgba(246,102,36,0.15),rgba(255,138,76,0.1));
-        border-color: rgba(246,102,36,0.5);
-      }
-      .ss-playlist-icon {
-        width: 36px; height: 36px;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 10px;
-        background: rgba(255,255,255,0.05);
-      }
-      .ss-playlist.active .ss-playlist-icon { background: rgba(246,102,36,0.2); }
-      .ss-playlist-icon svg { width: 20px; height: 20px; fill: rgba(255,255,255,0.7); }
-      .ss-playlist.active .ss-playlist-icon svg { fill: #ff8a4c; }
-      .ss-playlist-name {
-        font-size: 0.6875rem; font-weight: 500;
-        color: rgba(255,255,255,0.8); line-height: 1.3;
-        max-width: 100%; overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-box; -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
-      .ss-playlist.active .ss-playlist-name { color: #fff; font-weight: 600; }
-      
-      /* ===== URL FORM ===== */
-      .ss-url-form { display: flex; gap: 0.5rem; }
-      .ss-url-input {
-        flex: 1; padding: 0.625rem 0.875rem;
-        background: rgba(255,255,255,0.05);
-        border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 10px; color: #fff;
-        font-size: 0.8125rem; font-family: inherit;
-        outline: none; transition: border-color 0.15s ease;
-        min-width: 0;
-      }
-      .ss-url-input:focus { border-color: rgba(246,102,36,0.5); }
-      .ss-url-input::placeholder { color: rgba(255,255,255,0.35); }
-      .ss-url-btn {
-        display: inline-flex; align-items: center; gap: 0.375rem;
-        padding: 0.625rem 1rem; border-radius: 10px;
-        background: linear-gradient(135deg,#f66624,#ff8a4c);
-        border: none; color: #fff;
-        font-size: 0.8125rem; font-weight: 600;
-        font-family: inherit; cursor: pointer;
-        transition: all 0.15s ease; white-space: nowrap;
-        box-shadow: 0 4px 12px rgba(246,102,36,0.3);
-      }
-      .ss-url-btn:hover {
-        background: linear-gradient(135deg,#ff7a3d,#ff9a5c);
-        box-shadow: 0 6px 16px rgba(246,102,36,0.4);
-      }
-      .ss-url-btn svg { width: 14px; height: 14px; }
-      .ss-url-error { font-size: 0.75rem; color: #ff6b6b; padding: 0.25rem 0; }
-      .ss-url-success { font-size: 0.75rem; color: #4ade80; padding: 0.25rem 0; }
-      
-      /* ===== FAVORITES ===== */
-      .ss-favorites { display: flex; flex-direction: column; gap: 0.375rem; }
-      .ss-favorite {
-        display: flex; align-items: center; gap: 0.625rem;
-        padding: 0.5rem 0.625rem;
-        background: rgba(255,255,255,0.03);
-        border: 1px solid rgba(255,255,255,0.06);
-        border-radius: 8px; cursor: pointer;
-        transition: all 0.15s ease;
-      }
-      .ss-favorite:hover {
-        background: rgba(255,255,255,0.06);
-        border-color: rgba(255,255,255,0.12);
-      }
-      .ss-favorite-platform {
-        width: 24px; height: 24px;
-        display: flex; align-items: center; justify-content: center;
-        border-radius: 6px;
-        background: rgba(255,255,255,0.05);
-        flex-shrink: 0;
-      }
-      .ss-favorite-platform svg { width: 14px; height: 14px; fill: rgba(255,255,255,0.7); }
-      .ss-favorite-name {
-        flex: 1; font-size: 0.8125rem; color: #fff;
-        overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      }
-      .ss-favorite-remove {
-        width: 20px; height: 20px; border-radius: 5px;
-        background: transparent; border: none;
-        color: rgba(255,255,255,0.3); cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-        flex-shrink: 0;
-      }
-      .ss-favorite-remove:hover { background: rgba(255,59,48,0.15); color: #ff3b30; }
-      .ss-favorite-remove svg { width: 12px; height: 12px; }
-      
-      /* ===== PLAYER ===== */
-      .ss-player-wrapper {
-        flex: 1; min-height: 0;
-        display: flex; flex-direction: column;
-        border-radius: 12px; overflow: hidden;
-        background: rgba(0,0,0,0.2);
-        border: 1px solid rgba(255,255,255,0.06);
-      }
-      .ss-player-header {
-        display: flex; align-items: center; gap: 0.5rem;
-        padding: 0.625rem 0.875rem;
-        background: rgba(0,0,0,0.2);
-        border-bottom: 1px solid rgba(255,255,255,0.06);
-        flex-shrink: 0;
-      }
-      .ss-player-header svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
-      .ss-player-title {
-        flex: 1; font-size: 0.75rem; font-weight: 600;
-        color: #fff; overflow: hidden;
-        text-overflow: ellipsis; white-space: nowrap;
-      }
-      .ss-player-close {
-        width: 20px; height: 20px; border-radius: 5px;
-        background: transparent; border: none;
-        color: rgba(255,255,255,0.4); cursor: pointer;
-        display: flex; align-items: center; justify-content: center;
-      }
-      .ss-player-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
-      .ss-player-close svg { width: 12px; height: 12px; }
-      .ss-player-iframe-wrapper {
-        flex: 1; min-height: 0; position: relative; overflow: hidden;
-      }
-      .ss-player-iframe-wrapper iframe {
-        position: absolute; inset: 0;
-        width: 100%; height: 100%; border: 0;
-      }
-      .ss-player-empty {
-        flex: 1; display: flex; flex-direction: column;
-        align-items: center; justify-content: center;
-        gap: 0.5rem; color: rgba(255,255,255,0.3);
-        font-size: 0.8125rem; text-align: center; padding: 1.5rem;
-      }
-      .ss-player-empty svg {
-        width: 32px; height: 32px;
-        stroke: rgba(255,255,255,0.2); fill: none; stroke-width: 1.5;
-      }
-      
-      /* ===== TOOLBAR BUTTON ===== */
-      .dash-button[data-nestafocus-sounds] {
-        position: relative;
-        transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
-      }
-      .dash-button[data-nestafocus-sounds].active {
-        background-color: rgba(246,102,36,0.15);
-        box-shadow: inset 0 0 0 1px rgba(246,102,36,0.4);
-        color: #ff8a4c;
-      }
-      .dash-button[data-nestafocus-sounds].active svg { color: #ff8a4c; }
-      .dash-button[data-nestafocus-sounds] svg { transition: transform 0.2s ease; }
-      .dash-button[data-nestafocus-sounds]:hover svg { transform: scale(1.1); }
-      .ss-active-badge {
-        position: absolute; top: -2px; right: -2px;
-        min-width: 16px; height: 16px; padding: 0 4px;
-        border-radius: 8px;
-        background: linear-gradient(135deg,#f66624,#ff8a4c);
-        color: #fff; font-size: 10px; font-weight: 700;
-        line-height: 16px; text-align: center;
-        pointer-events: none; display: none;
-        box-shadow: 0 2px 6px rgba(246,102,36,0.5);
-      }
-      .ss-active-badge.visible { display: block; }
-      
-      /* ===== RESPONSIVE ===== */
-      @media (max-width: 768px) {
-        .sounds-studio {
-          width: 100vw; height: 100vh;
-          max-width: 100vw; max-height: 100vh;
-          border-radius: 0; top: 0; left: 0;
-          transform: translate(0,0) scale(1);
-        }
-        .sounds-studio.show { transform: translate(0,0) scale(1); }
-        .ss-grid { grid-template-columns: repeat(auto-fill,minmax(110px,1fr)); gap: 0.5rem; }
-        .ss-sound { padding: 0.75rem 0.5rem; }
-        .ss-sound-icon { width: 36px; height: 36px; }
-        .ss-sound-icon svg { width: 20px; height: 20px; }
-        .ss-active-volume { width: 60px; }
-        .ss-music-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; padding: 0.75rem; }
-        .ss-playlists-grid { grid-template-columns: repeat(auto-fill,minmax(90px,1fr)); }
-        .ss-url-form { flex-direction: column; }
-        .ss-url-btn { width: 100%; justify-content: center; }
-      }
-    `;
-    document.head.appendChild(style);
-  }
-  
-  // ============================================
-  // STATE
-  // ============================================
-  let sounds = {};
-  let activeSounds = [];
-  let presets = [];
-  let favorites = [];
-  let currentCategory = 'all';
-  let currentTab = 'sounds';
-  let searchQuery = '';
-  let isPlaying = false;
-  let currentAudio = {};
-  let currentIframe = null;
-  
-  // ============================================
-  // UTILS
-  // ============================================
-  function debounce(fn, wait) {
-    let t;
-    return (...args) => {
-      clearTimeout(t);
-      t = setTimeout(() => fn(...args), wait);
-    };
-  }
-  
-  function getIcon(id) {
-    const iconKey = SOUND_ICON_MAP[id] || 'headphones';
-    return ICONS[iconKey] || '';
-  }
-  
-  function escapeHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g, '&amp;').replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;').replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;');
-  }
-  
-  function getPlatformIcon(p) {
-    return {
-      spotify: ICONS.spotify,
-      youtube: ICONS.youtube,
-      youtubeMusic: ICONS.youtubeMusic,
-      appleMusic: ICONS.appleMusic,
-      soundcloud: ICONS.soundcloud,
-      amazonMusic: ICONS.amazonMusic,
-    }[p] || ICONS.musicNote;
-  }
-  
-  function getPlatformName(p) {
-    return {
-      spotify: 'Spotify', youtube: 'YouTube',
-      youtubeMusic: 'YouTube Music', appleMusic: 'Apple Music',
-      soundcloud: 'SoundCloud', amazonMusic: 'Amazon Music',
-    }[p] || 'Musique';
-  }
-  
-  function getPlatformColor(p) {
-    return {
-      spotify: '#1DB954', youtube: '#FF0000',
-      youtubeMusic: '#FF0000', appleMusic: '#FA243C',
-      soundcloud: '#FF5500', amazonMusic: '#25D1DA',
-    }[p] || '#f66624';
-  }
-  
-  function detectPlatform(url) {
-    if (typeof url !== 'string') return null;
-    const u = url.trim();
-    
-    if (u.includes('open.spotify.com') || u.startsWith('spotify:')) {
-      let uri = u;
-      if (u.includes('open.spotify.com')) {
-        const m = u.match(/(?:playlist|album|track|artist)\/([a-zA-Z0-9]+)/);
-        if (m) {
-          const type = u.includes('/playlist/') ? 'playlist' : u.includes('/album/') ? 'album' : u.includes('/track/') ? 'track' : 'artist';
-          uri = `spotify:${type}:${m[1]}`;
-        }
-      }
-      return { platform: 'spotify', uri };
+  const icon = (name) => ICONS[name] || ICONS.sound;
+
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[char]));
+
+  function readStorage(key, fallback) {
+    try {
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : fallback;
+    } catch (error) {
+      console.error(`Studio : impossible de lire ${key}.`, error);
+      return fallback;
     }
-    
-    if (u.includes('music.youtube.com')) return { platform: 'youtubeMusic', uri: u };
-    
-    if (u.includes('youtube.com') || u.includes('youtu.be')) {
-      const vm = u.match(/(?:v=|youtu\.be\/|\/embed\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);
-      const lm = u.match(/[?&]list=([a-zA-Z0-9_-]+)/);
-      if (lm) return { platform: 'youtube', uri: `https://www.youtube.com/embed/?listType=playlist&list=${lm[1]}` };
-      if (vm) return { platform: 'youtube', uri: `https://www.youtube.com/embed/${vm[1]}` };
+  }
+
+  function parseMusicUrl(value) {
+    if (typeof value !== 'string') return null;
+    const raw = value.trim();
+    const spotifyUri = raw.match(/^spotify:(playlist|album|track|artist):([a-zA-Z0-9]+)$/);
+    if (spotifyUri) {
+      return { platform: 'Spotify', title: 'Spotify', url: raw, embed: `https://open.spotify.com/embed/${spotifyUri[1]}/${spotifyUri[2]}` };
     }
-    
-    if (u.includes('music.apple.com')) {
-      return { platform: 'appleMusic', uri: u.replace('music.apple.com', 'embed.music.apple.com') + '?theme=dark' };
+    let url;
+    try {
+      url = new URL(raw);
+    } catch {
+      return null;
     }
-    
-    if (u.includes('soundcloud.com')) {
-      return { platform: 'soundcloud', uri: `https://w.soundcloud.com/player/?url=${encodeURIComponent(u)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true&visual=true` };
+    if (url.protocol !== 'https:') return null;
+    const host = url.hostname.toLowerCase();
+    if (host === 'open.spotify.com') {
+      const match = url.pathname.match(/^\/(?:intl-[a-z]{2}(?:-[a-z]{2})?\/)?(playlist|album|track|artist)\/([a-zA-Z0-9]+)/);
+      if (!match) return null;
+      return { platform: 'Spotify', title: 'Spotify', url: url.href, embed: `https://open.spotify.com/embed/${match[1]}/${match[2]}` };
     }
-    
-    if (u.includes('music.amazon.')) {
-      const m = u.match(/music\.amazon\.[a-z.]+\/(?:[\w-]+\/)?(?:playlists|albums|tracks)\/([a-zA-Z0-9-]+)/);
-      if (m) {
-        const domain = u.match(/music\.amazon\.[a-z.]+/)[0];
-        return { platform: 'amazonMusic', uri: `https://${domain}/embed/${m[1]}` };
-      }
+    if (['youtube.com', 'www.youtube.com', 'music.youtube.com', 'youtu.be'].includes(host)) {
+      const videoId = host === 'youtu.be'
+        ? url.pathname.slice(1).split('/')[0]
+        : url.searchParams.get('v') || url.pathname.match(/^\/(?:embed|shorts)\/([a-zA-Z0-9_-]{11})/)?.[1];
+      const playlistId = url.searchParams.get('list');
+      if (videoId && !/^[a-zA-Z0-9_-]{11}$/.test(videoId)) return null;
+      if (!videoId && !playlistId) return null;
+      const embed = videoId
+        ? `https://www.youtube-nocookie.com/embed/${videoId}${playlistId ? `?list=${encodeURIComponent(playlistId)}` : ''}`
+        : `https://www.youtube-nocookie.com/embed/videoseries?list=${encodeURIComponent(playlistId)}`;
+      return { platform: host === 'music.youtube.com' ? 'YouTube Music' : 'YouTube', title: 'YouTube', url: url.href, embed };
     }
-    
+    if (host === 'music.apple.com') {
+      if (!/^\/[a-z]{2}\//i.test(url.pathname)) return null;
+      url.hostname = 'embed.music.apple.com';
+      url.search = '';
+      return { platform: 'Apple Music', title: 'Apple Music', url: raw, embed: url.href };
+    }
+    if (['soundcloud.com', 'www.soundcloud.com', 'm.soundcloud.com'].includes(host)) {
+      if (url.pathname === '/') return null;
+      return {
+        platform: 'SoundCloud',
+        title: 'SoundCloud',
+        url: url.href,
+        embed: `https://w.soundcloud.com/player/?url=${encodeURIComponent(url.href)}&color=%23f66624&auto_play=false`,
+      };
+    }
+    if (['deezer.com', 'www.deezer.com'].includes(host)) {
+      const match = url.pathname.match(/^\/(?:[a-z]{2}(?:-[a-z]{2})?\/)?(track|album|playlist)\/(\d+)/i);
+      if (!match) return null;
+      return {
+        platform: 'Deezer',
+        title: 'Deezer',
+        url: url.href,
+        embed: `https://widget.deezer.com/widget/dark/${match[1]}/${match[2]}`,
+      };
+    }
+    if (['tidal.com', 'www.tidal.com', 'listen.tidal.com'].includes(host)) {
+      const match = url.pathname.match(/^\/(?:browse\/)?(track|album|playlist)\/([a-zA-Z0-9-]+)/i);
+      if (!match) return null;
+      const type = { track: 'tracks', album: 'albums', playlist: 'playlists' }[match[1].toLowerCase()];
+      return {
+        platform: 'Tidal',
+        title: 'Tidal',
+        url: url.href,
+        embed: `https://embed.tidal.com/${type}/${match[2]}`,
+      };
+    }
+    if (/^music\.amazon\.(?:com|ca|co\.uk|com\.au|com\.br|de|es|fr|it|co\.jp)$/.test(host)) {
+      const match = url.pathname.match(/^\/(?:[\w-]+\/)?(?:playlists|user-playlists|albums|tracks)\/([a-zA-Z0-9-]+)/);
+      if (!match) return null;
+      return { platform: 'Amazon Music', title: 'Amazon Music', url: url.href, embed: `https://${host}/embed/${encodeURIComponent(match[1])}` };
+    }
     return null;
   }
-  
-  // ============================================
-  // PERSISTENCE
-  // ============================================
-  function loadState() {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) {
-        const data = JSON.parse(raw);
-        activeSounds = Array.isArray(data.active) ? data.active : [];
-      }
-    } catch (e) { activeSounds = []; }
-    
-    try {
-      const raw = localStorage.getItem(PRESETS_KEY);
-      if (raw) {
-        presets = JSON.parse(raw);
-        if (!Array.isArray(presets)) presets = [];
-      }
-    } catch (e) { presets = []; }
-    
-    try {
-      const raw = localStorage.getItem(FAVORITES_KEY);
-      if (raw) {
-        favorites = JSON.parse(raw);
-        if (!Array.isArray(favorites)) favorites = [];
-      }
-    } catch (e) { favorites = []; }
-  }
-  
-  function saveState() {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ active: activeSounds })); } catch (e) {}
-  }
-  function savePresets() {
-    try { localStorage.setItem(PRESETS_KEY, JSON.stringify(presets)); } catch (e) {}
-  }
-  function saveFavorites() {
-    try { localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites)); } catch (e) {}
-  }
-  
-  // ============================================
-  // AUDIO
-  // ============================================
-  function playSound(id) {
-    if (!window.Howl) return;
-    const sound = sounds[id];
-    if (!sound || !sound.src) return;
-    if (!currentAudio[id]) {
-      currentAudio[id] = new Howl({ src: [sound.src], loop: true, volume: 0.5 });
-    }
-    currentAudio[id].play();
-    isPlaying = true;
-    updatePlayButton();
-  }
-  
-  function setVolume(id, volume) {
-    if (currentAudio[id]) currentAudio[id].volume(volume);
-  }
-  
-  function stopAll() {
-    Object.values(currentAudio).forEach(a => a.stop());
-    Object.keys(currentAudio).forEach(k => delete currentAudio[k]);
-    isPlaying = false;
-    updatePlayButton();
-  }
-  
-  function pauseAll() {
-    Object.values(currentAudio).forEach(a => a.pause());
-    isPlaying = false;
-    updatePlayButton();
-  }
-  
-  function playAll() {
-    activeSounds.forEach(({ id, volume }) => {
-      playSound(id);
-      setVolume(id, volume);
-    });
-    isPlaying = true;
-    updatePlayButton();
-  }
-  
-  // ============================================
-  // UI BUILD
-  // ============================================
-  function buildUI() {
-    const overlay = document.createElement('div');
-    overlay.className = 'sounds-studio-overlay';
-    
-    const modal = document.createElement('div');
-    modal.className = 'sounds-studio';
-    modal.innerHTML = `
-      <div class="ss-header">
-        <div class="ss-header-icon">${ICONS.headphones}</div>
-        <div class="ss-header-text">
-          <h2>Studio</h2>
-          <p>Sons d'ambiance + Musique</p>
-        </div>
-        <button class="ss-close" type="button" aria-label="Fermer">${ICONS.close}</button>
-      </div>
-      
-      <div class="ss-tabs" role="tablist">
-        <button class="ss-tab active" data-tab="sounds" type="button">${ICONS.headphones}<span>Sons</span></button>
-        <button class="ss-tab" data-tab="music" type="button">${ICONS.musicNote}<span>Ma Musique</span></button>
-      </div>
-      
-      <div class="ss-tab-content active" data-tab-content="sounds">
-        <div class="ss-toolbar">
-          <div class="ss-search">
-            ${ICONS.search}
-            <input type="text" placeholder="Rechercher un son…" />
-          </div>
-          <div class="ss-filters">
-            <button class="ss-chip active" data-category="all" type="button">Tous</button>
-            <button class="ss-chip" data-category="Nature" type="button">Nature</button>
-            <button class="ss-chip" data-category="Weather" type="button">Météo</button>
-            <button class="ss-chip" data-category="Interior" type="button">Intérieur</button>
-            <button class="ss-chip" data-category="Lifestyle" type="button">Lifestyle</button>
-            <button class="ss-chip" data-category="Focus" type="button">Focus</button>
-            <button class="ss-chip" data-category="Niche" type="button">Niche</button>
-          </div>
-        </div>
-        <div class="ss-body">
-          <div class="ss-grid" data-sounds-grid></div>
-          <div class="ss-active-section">
-            <div class="ss-active-header">
-              <h3>Sons actifs</h3>
-              <span class="ss-active-count" data-active-count>0 / ${MAX_ACTIVE}</span>
-            </div>
-            <div class="ss-active-list" data-active-list></div>
-          </div>
-        </div>
-        <div class="ss-footer">
-          <button class="ss-btn primary" type="button" data-action="play-pause">
-            ${ICONS.play}<span>Play</span>
-          </button>
-          <button class="ss-btn" type="button" data-action="stop" disabled>
-            ${ICONS.stop}<span>Stop</span>
-          </button>
-          <button class="ss-btn" type="button" data-action="surprise">
-            ${ICONS.dice}<span>Surprise</span>
-          </button>
-          <div class="ss-btn-spacer"></div>
-          <div style="position: relative;">
-            <button class="ss-btn" type="button" data-action="presets">
-              ${ICONS.save}<span>Presets</span>
-            </button>
-            <div class="ss-preset-menu" data-preset-menu></div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="ss-tab-content" data-tab-content="music">
-        <div class="ss-music-layout">
-          <div class="ss-music-left">
-            <div class="ss-section">
-              <div class="ss-section-header"><h3>Playlists</h3></div>
-              <div class="ss-playlists-grid" data-playlists-grid></div>
-            </div>
-            <div class="ss-section">
-              <div class="ss-section-header"><h3>Ajouter une musique</h3></div>
-              <div class="ss-url-form">
-                <input type="text" class="ss-url-input" placeholder="Lien Spotify, YouTube, Apple Music…" data-url-input />
-                <button class="ss-url-btn" type="button" data-url-btn>${ICONS.plus}<span>Ajouter</span></button>
-              </div>
-              <div data-url-message></div>
-            </div>
-            <div class="ss-section" data-favorites-section style="display: none;">
-              <div class="ss-section-header">
-                <h3>Favoris</h3>
-                <span class="ss-count" data-favorites-count>0</span>
-              </div>
-              <div class="ss-favorites" data-favorites-list></div>
-            </div>
-          </div>
-          <div class="ss-music-right">
-            <div class="ss-player-wrapper" data-player-wrapper>
-              <div class="ss-player-empty">
-                ${ICONS.headphones}
-                <div>Sélectionnez une playlist ou collez un lien</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-    
-    document.body.appendChild(overlay);
-    document.body.appendChild(modal);
-    return { overlay, modal };
-  }
-  
-  // ============================================
-  // RENDER
-  // ============================================
-  function renderGrid() {
-    const grid = document.querySelector('[data-sounds-grid]');
-    if (!grid) return;
-    const q = searchQuery.toLowerCase().trim();
-    const filtered = Object.entries(sounds).filter(([id, s]) => {
-      if (id === 'none') return false;
-      if (currentCategory !== 'all' && !(s.tags || []).includes(currentCategory)) return false;
-      if (q && !s.name.toLowerCase().includes(q)) return false;
-      return true;
-    });
-    if (!filtered.length) {
-      grid.innerHTML = '<div class="ss-empty" style="grid-column:1/-1">Aucun son trouvé</div>';
-      return;
-    }
-    grid.innerHTML = filtered.map(([id, s]) => {
-      const active = activeSounds.some(a => a.id === id);
-      return `<div class="ss-sound${active ? ' active' : ''}" data-sound-id="${id}" role="button" tabindex="0">
-        <div class="ss-sound-icon">${getIcon(id)}</div>
-        <div class="ss-sound-name">${escapeHtml(s.name)}</div>
-      </div>`;
-    }).join('');
-  }
-  
-  function renderActiveList() {
-    const list = document.querySelector('[data-active-list]');
-    const count = document.querySelector('[data-active-count]');
-    if (!list || !count) return;
-    count.textContent = `${activeSounds.length} / ${MAX_ACTIVE}`;
-    count.classList.toggle('max', activeSounds.length >= MAX_ACTIVE);
-    if (!activeSounds.length) {
-      list.innerHTML = '<div class="ss-empty">Aucun son actif. Cliquez sur un son pour l\'ajouter.</div>';
-      return;
-    }
-    list.innerHTML = activeSounds.map(({ id, volume }) => {
-      const s = sounds[id];
-      if (!s) return '';
-      return `<div class="ss-active-item" data-active-id="${id}">
-        <div class="ss-active-icon">${getIcon(id)}</div>
-        <div class="ss-active-name">${escapeHtml(s.name)}</div>
-        <div class="ss-active-volume" data-volume-id="${id}">
-          <div class="ss-active-volume-fill" style="width:${volume * 100}%"></div>
-          <div class="ss-active-volume-thumb" style="left:${volume * 100}%"></div>
-        </div>
-        <button class="ss-active-remove" type="button" data-remove-id="${id}">${ICONS.close}</button>
-      </div>`;
-    }).join('');
-  }
-  
-  function renderPresetMenu() {
-    const menu = document.querySelector('[data-preset-menu]');
-    if (!menu) return;
-    if (!presets.length) {
-      menu.innerHTML = `<div class="ss-preset-empty">Aucun preset</div>
-        <div class="ss-preset-item" data-action="save-preset">
-          <div class="ss-preset-item-icon">${ICONS.save}</div>
-          <div class="ss-preset-item-name">Sauvegarder le mix actuel</div>
-        </div>`;
-      return;
-    }
-    menu.innerHTML = presets.map((p, i) => {
-      const icons = p.sounds.slice(0, 3).map(id => getIcon(id)).join('');
-      return `<div class="ss-preset-item" data-preset-index="${i}">
-        <div class="ss-preset-item-icon">${icons}</div>
-        <div class="ss-preset-item-name">${escapeHtml(p.name)}</div>
-        <button class="ss-preset-item-remove" type="button" data-remove-preset="${i}">${ICONS.close}</button>
-      </div>`;
-    }).join('') + `<div class="ss-preset-item" data-action="save-preset" style="border-top:1px solid rgba(255,255,255,0.06);margin-top:0.25rem;padding-top:0.75rem;">
-      <div class="ss-preset-item-icon">${ICONS.save}</div>
-      <div class="ss-preset-item-name">Sauvegarder le mix actuel</div>
-    </div>`;
-  }
-  
-  function renderPlaylists() {
-    const grid = document.querySelector('[data-playlists-grid]');
-    if (!grid) return;
-    grid.innerHTML = Object.entries(PLAYLISTS).map(([id, pl]) => {
-      const active = currentIframe?.platform === 'spotify' && currentIframe?.uri?.includes(pl.uri.split(':').pop());
-      return `<div class="ss-playlist${active ? ' active' : ''}" data-playlist-id="${id}">
-        <div class="ss-playlist-icon">${ICONS.spotify}</div>
-        <div class="ss-playlist-name">${escapeHtml(pl.name)}</div>
-      </div>`;
-    }).join('');
-  }
-  
-  function renderFavorites() {
-    const list = document.querySelector('[data-favorites-list]');
-    const count = document.querySelector('[data-favorites-count]');
-    const section = document.querySelector('[data-favorites-section]');
-    if (!list || !count || !section) return;
-    count.textContent = String(favorites.length);
-    section.style.display = favorites.length > 0 ? '' : 'none';
-    list.innerHTML = favorites.map((fav, i) => `
-      <div class="ss-favorite" data-favorite-index="${i}">
-        <div class="ss-favorite-platform">${getPlatformIcon(fav.platform)}</div>
-        <div class="ss-favorite-name">${escapeHtml(fav.name)}</div>
-        <button class="ss-favorite-remove" type="button" data-remove-favorite="${i}">${ICONS.close}</button>
-      </div>
-    `).join('');
-  }
-  
-  function renderPlayer() {
-    const wrapper = document.querySelector('[data-player-wrapper]');
-    if (!wrapper) return;
-    if (!currentIframe) {
-      wrapper.innerHTML = `<div class="ss-player-empty">${ICONS.headphones}<div>Sélectionnez une playlist ou collez un lien</div></div>`;
-      return;
-    }
-    const color = getPlatformColor(currentIframe.platform);
-    wrapper.innerHTML = `
-      <div class="ss-player-header" style="color:${color}">
-        ${getPlatformIcon(currentIframe.platform)}
-        <div class="ss-player-title">${escapeHtml(currentIframe.title || getPlatformName(currentIframe.platform))}</div>
-        <button class="ss-player-close" type="button" data-close-player>${ICONS.close}</button>
-      </div>
-      <div class="ss-player-iframe-wrapper">
-        <iframe src="${currentIframe.uri}" allow="autoplay; encrypted-media; clipboard-write; picture-in-picture" allowfullscreen loading="lazy"></iframe>
-      </div>
-    `;
-  }
-  
-  function updatePlayButton() {
-    const btn = document.querySelector('[data-action="play-pause"]');
-    if (!btn) return;
-    const hasActive = activeSounds.length > 0;
-    const playing = isPlaying && hasActive;
-    btn.innerHTML = `${playing ? ICONS.pause : ICONS.play}<span>${playing ? 'Pause' : 'Play'}</span>`;
-    btn.disabled = !hasActive;
-    const stopBtn = document.querySelector('[data-action="stop"]');
-    if (stopBtn) stopBtn.disabled = !hasActive;
-  }
-  
-  function updateActiveBadge() {
-    const btn = document.querySelector('[data-nestafocus-sounds]');
-    if (!btn) return;
-    let badge = btn.querySelector('.ss-active-badge');
-    if (!badge) {
-      badge = document.createElement('span');
-      badge.className = 'ss-active-badge';
-      btn.appendChild(badge);
-    }
-    if (activeSounds.length > 0) {
-      badge.textContent = String(activeSounds.length);
-      badge.classList.add('visible');
-      btn.classList.add('active');
-    } else {
-      badge.classList.remove('visible');
-      btn.classList.remove('active');
-    }
-  }
-  
-  // ============================================
-  // ACTIONS
-  // ============================================
-  function addSound(id) {
-    if (activeSounds.some(a => a.id === id)) return;
-    if (activeSounds.length >= MAX_ACTIVE) {
-      const c = document.querySelector('[data-active-count]');
-      if (c) { c.style.animation = 'ss-pulse 0.5s ease 3'; setTimeout(() => { c.style.animation = ''; }, 1500); }
-      return;
-    }
-    if (!sounds[id]) return;
-    activeSounds.push({ id, volume: 0.5 });
-    saveState(); renderGrid(); renderActiveList(); updatePlayButton(); updateActiveBadge();
-    if (isPlaying) { playSound(id); setVolume(id, 0.5); }
-  }
-  
-  function removeSound(id) {
-    activeSounds = activeSounds.filter(a => a.id !== id);
-    saveState(); renderGrid(); renderActiveList(); updatePlayButton(); updateActiveBadge();
-    if (currentAudio[id]) { currentAudio[id].stop(); delete currentAudio[id]; }
-    if (!activeSounds.length) { isPlaying = false; updatePlayButton(); }
-  }
-  
-  function updateVolume(id, vol) {
-    const item = activeSounds.find(a => a.id === id);
-    if (!item) return;
-    item.volume = vol; setVolume(id, vol); saveState();
-    const c = document.querySelector(`[data-volume-id="${id}"]`);
-    if (c) {
-      const f = c.querySelector('.ss-active-volume-fill');
-      const t = c.querySelector('.ss-active-volume-thumb');
-      if (f) f.style.width = `${vol * 100}%`;
-      if (t) t.style.left = `${vol * 100}%`;
-    }
-  }
-  
-  function surpriseMe() {
-    const avail = Object.entries(sounds).filter(([id]) => id !== 'none');
-    if (!avail.length) return;
-    activeSounds.forEach(({ id }) => { if (currentAudio[id]) { currentAudio[id].stop(); delete currentAudio[id]; } });
-    activeSounds = [];
-    const count = Math.min(3, avail.length);
-    const shuffled = [...avail].sort(() => Math.random() - 0.5);
-    for (let i = 0; i < count; i++) activeSounds.push({ id: shuffled[i][0], volume: 0.5 });
-    saveState(); renderGrid(); renderActiveList(); updatePlayButton(); updateActiveBadge(); playAll();
-  }
-  
-  function savePreset() {
-    if (!activeSounds.length) return;
-    const name = prompt('Nom du preset :');
-    if (!name) return;
-    presets.push({
-      name: name.trim().slice(0, 40),
-      sounds: activeSounds.map(a => a.id),
-      volumes: activeSounds.reduce((acc, a) => ({ ...acc, [a.id]: a.volume }), {}),
-      createdAt: Date.now(),
-    });
-    savePresets(); renderPresetMenu();
-  }
-  
-  function loadPreset(i) {
-    const p = presets[i];
-    if (!p) return;
-    activeSounds.forEach(({ id }) => { if (currentAudio[id]) { currentAudio[id].stop(); delete currentAudio[id]; } });
-    activeSounds = [];
-    p.sounds.forEach(id => {
-      if (sounds[id]) activeSounds.push({ id, volume: p.volumes?.[id] ?? 0.5 });
-    });
-    saveState(); renderGrid(); renderActiveList(); updatePlayButton(); updateActiveBadge(); playAll();
-    document.querySelector('[data-preset-menu]')?.classList.remove('show');
-  }
-  
-  function deletePreset(i) {
-    presets.splice(i, 1); savePresets(); renderPresetMenu();
-  }
-  
-  function loadPlaylist(id) {
-    const pl = PLAYLISTS[id];
-    if (!pl) return;
-    const spotifyId = pl.uri.split(':').pop();
-    currentIframe = {
-      platform: 'spotify',
-      uri: `https://open.spotify.com/embed/playlist/${spotifyId}?utm_source=generator&theme=0`,
-      title: pl.name,
-    };
-    renderPlaylists(); renderPlayer();
-  }
-  
-  function loadFromUrl(url) {
-    const message = document.querySelector('[data-url-message]');
-    const detected = detectPlatform(url);
-    if (!detected) {
-      if (message) {
-        message.innerHTML = '<div class="ss-url-error">Format non reconnu.</div>';
-        setTimeout(() => { message.innerHTML = ''; }, 4000);
-      }
-      return;
-    }
-    let embedUri = detected.uri;
-    const title = getPlatformName(detected.platform);
-    if (detected.platform === 'spotify') {
-      const m = detected.uri.match(/spotify:(playlist|album|track|artist):([a-zA-Z0-9]+)/);
-      if (m) embedUri = `https://open.spotify.com/embed/${m[1]}/${m[2]}?utm_source=generator&theme=0`;
-    }
-    currentIframe = { platform: detected.platform, uri: embedUri, title };
-    if (message) {
-      message.innerHTML = `<div class="ss-url-success">✓ ${getPlatformName(detected.platform)} détecté</div>`;
-      setTimeout(() => { message.innerHTML = ''; }, 3000);
-    }
-    renderPlayer();
-  }
-  
-  function removeFavorite(i) {
-    favorites.splice(i, 1); saveFavorites(); renderFavorites();
-  }
-  
-  function loadFavorite(i) {
-    const fav = favorites[i];
-    if (fav) loadFromUrl(fav.url);
-  }
-  
-  // ============================================
-  // EVENTS
-  // ============================================
-  function setupEvents(modal, overlay) {
-    const close = () => {
-      modal.classList.remove('show');
-      overlay.classList.remove('show');
-      const btn = document.querySelector('[data-nestafocus-sounds]');
-      if (btn) btn.classList.remove('active');
-    };
-    
-    modal.querySelector('.ss-close')?.addEventListener('click', close);
-    overlay.addEventListener('click', close);
-    
-    const keyHandler = (e) => {
-      if (!modal.classList.contains('show')) return;
-      if (e.key === 'Escape') { close(); return; }
-      if (e.key === ' ' && !e.target.matches('input, textarea')) {
-        e.preventDefault();
-        const btn = modal.querySelector('[data-action="play-pause"]');
-        if (btn && !btn.disabled) btn.click();
-      }
-    };
-    document.addEventListener('keydown', keyHandler);
-    modal._keyHandler = keyHandler;
-    
-    modal.querySelectorAll('.ss-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        const target = tab.dataset.tab;
-        if (target === currentTab) return;
-        currentTab = target;
-        modal.querySelectorAll('.ss-tab').forEach(t => t.classList.toggle('active', t === tab));
-        modal.querySelectorAll('.ss-tab-content').forEach(c => c.classList.toggle('active', c.dataset.tabContent === target));
-        if (target === 'music') { renderPlaylists(); renderFavorites(); renderPlayer(); }
-      });
-    });
-    
-    const search = modal.querySelector('.ss-search input');
-    if (search) search.addEventListener('input', debounce((e) => { searchQuery = e.target.value; renderGrid(); }, 150));
-    
-    modal.querySelectorAll('.ss-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        modal.querySelectorAll('.ss-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-        currentCategory = chip.dataset.category;
-        renderGrid();
-      });
-    });
-    
-    modal.querySelector('[data-sounds-grid]')?.addEventListener('click', (e) => {
-      const el = e.target.closest('[data-sound-id]');
-      if (!el) return;
-      const id = el.dataset.soundId;
-      if (activeSounds.some(a => a.id === id)) removeSound(id); else addSound(id);
-    });
-    
-    modal.querySelector('[data-action="play-pause"]')?.addEventListener('click', () => {
-      if (isPlaying) pauseAll(); else playAll();
-    });
-    modal.querySelector('[data-action="stop"]')?.addEventListener('click', stopAll);
-    modal.querySelector('[data-action="surprise"]')?.addEventListener('click', surpriseMe);
-    
-    const presetBtn = modal.querySelector('[data-action="presets"]');
-    const presetMenu = modal.querySelector('[data-preset-menu]');
-    presetBtn?.addEventListener('click', (e) => {
-      e.stopPropagation(); renderPresetMenu(); presetMenu.classList.toggle('show');
-    });
-    presetMenu?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const rm = e.target.closest('[data-remove-preset]');
-      if (rm) { deletePreset(parseInt(rm.dataset.removePreset)); return; }
-      const sv = e.target.closest('[data-action="save-preset"]');
-      if (sv) { savePreset(); return; }
-      const item = e.target.closest('[data-preset-index]');
-      if (item) loadPreset(parseInt(item.dataset.presetIndex));
-    });
-    document.addEventListener('click', (e) => {
-      if (presetMenu?.classList.contains('show')) {
-        if (!e.target.closest('[data-action="presets"]') && !e.target.closest('[data-preset-menu]')) {
-          presetMenu.classList.remove('show');
-        }
-      }
-    });
-    
-    modal.querySelector('[data-active-list]')?.addEventListener('pointerdown', (e) => {
-      const vel = e.target.closest('[data-volume-id]');
-      if (!vel) return;
-      e.preventDefault();
-      const id = vel.dataset.volumeId;
-      const rect = vel.getBoundingClientRect();
-      const handler = (ev) => {
-        const x = Math.max(0, Math.min(ev.clientX - rect.left, rect.width));
-        updateVolume(id, x / rect.width);
-      };
-      handler(e);
-      window.addEventListener('pointermove', handler);
-      window.addEventListener('pointerup', () => window.removeEventListener('pointermove', handler), { once: true });
-    });
-    modal.querySelector('[data-active-list]')?.addEventListener('click', (e) => {
-      const rm = e.target.closest('[data-remove-id]');
-      if (rm) removeSound(rm.dataset.removeId);
-    });
-    
-    modal.querySelector('[data-playlists-grid]')?.addEventListener('click', (e) => {
-      const pl = e.target.closest('[data-playlist-id]');
-      if (pl) loadPlaylist(pl.dataset.playlistId);
-    });
-    
-    const urlInput = modal.querySelector('[data-url-input]');
-    const urlBtn = modal.querySelector('[data-url-btn]');
-    if (urlBtn && urlInput) {
-      const go = () => { const url = urlInput.value.trim(); if (!url) return; loadFromUrl(url); urlInput.value = ''; };
-      urlBtn.addEventListener('click', go);
-      urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); go(); } });
-    }
-    
-    modal.querySelector('[data-favorites-list]')?.addEventListener('click', (e) => {
-      const rm = e.target.closest('[data-remove-favorite]');
-      if (rm) { removeFavorite(parseInt(rm.dataset.removeFavorite)); return; }
-      const fav = e.target.closest('[data-favorite-index]');
-      if (fav) loadFavorite(parseInt(fav.dataset.favoriteIndex));
-    });
-    
-    modal.querySelector('[data-player-wrapper]')?.addEventListener('click', (e) => {
-      if (e.target.closest('[data-close-player]')) {
-        currentIframe = null;
-        renderPlayer();
-      }
-    });
-  }
-  
-  // ============================================
-  // COMPOSANT
-  // ============================================
+
   class SoundsStudio extends HTMLElement {
     constructor() {
       super();
-      this._initialized = false;
+      this.attachShadow({ mode: 'open' });
+      this.sounds = {};
+      this.selected = [];
+      this.presets = [];
+      this.favorites = [];
+      this.category = 'all';
+      this.query = '';
+      this.playing = false;
+      this.masterVolume = 0.8;
+      this.currentTrack = null;
+      this.timerDuration = 0;
+      this.timerEndsAt = 0;
+      this._keyHandler = (event) => {
+        if (event.key !== 'Escape') return;
+        if (this.hasAttribute('island-expanded')) this.removeAttribute('island-expanded');
+        else this.close();
+      };
+      this._outsideHandler = (event) => {
+        if (!event.composedPath().includes(this)) {
+          this.close();
+          this.removeAttribute('island-expanded');
+        }
+      };
+      this._resizeHandler = () => {
+        if (this.hasAttribute('open')) this.positionPopover();
+      };
     }
-    
+
     connectedCallback() {
-      if (this._initialized) return;
-      this._initialized = true;
-      
-      injectStyles();
-      this._loadSounds();
-      loadState();
-      
-      const { overlay, modal } = buildUI();
-      this._overlay = overlay;
-      this._modal = modal;
-      
-      renderGrid();
-      renderActiveList();
-      updatePlayButton();
-      updateActiveBadge();
-      
-      setupEvents(modal, overlay);
-      this._createToolbarButton();
+      if (this._ready) return;
+      this._ready = true;
+      this.music = window.Flocus?.newMusic;
+      const freeSounds = Object.fromEntries(
+        Object.entries(this.music?.sounds || {}).filter(([id, sound]) => id !== 'none' && !sound.isPlus)
+      );
+      this.sounds = {
+        ...freeSounds,
+        ...Object.fromEntries(CC0_SOUNDS.map((sound) => [sound.id, { ...sound }])),
+      };
+      this.restoreState();
+      this.render();
+      this.bindEvents();
+      this.addToolbarButton();
+      document.addEventListener('keydown', this._keyHandler);
+      document.addEventListener('pointerdown', this._outsideHandler);
+      window.addEventListener('resize', this._resizeHandler);
+      this.clockInterval = setInterval(() => this.updateIslandClock(), 1000);
+      this.renderSounds();
+      this.renderMix();
+      this.renderPresets();
+      this.renderFavorites();
+      this.updateIslandClock();
     }
-    
-    _loadSounds() {
-      const src = window.Flocus?.newMusic?.sounds;
-      if (src) {
-        sounds = {};
-        for (const [id, s] of Object.entries(src)) {
-          if (id === 'none') continue;
-          sounds[id] = {
-            name: s.name,
-            src: s.src || id,
-            emoji: s.emoji,
-            tags: s.tags || [],
-          };
+
+    restoreState() {
+      const saved = readStorage(STATE_KEY, null) || readStorage('nestafocus_sounds_v4', {});
+      const masterVolume = Number(saved?.masterVolume);
+      if (Number.isFinite(masterVolume)) this.masterVolume = Math.max(0, Math.min(1, masterVolume));
+      const active = Array.isArray(saved?.active) ? saved.active : [];
+      this.selected = active
+        .map((item) => item && { ...item, id: SOUND_ID_ALIASES[item.id] || item.id })
+        .filter((item) => item && this.sounds[item.id])
+        .filter((item, index, items) => items.findIndex((other) => other.id === item.id) === index)
+        .slice(0, MAX_ACTIVE)
+        .map((item) => {
+          const volume = Number(item.volume);
+          return { id: item.id, volume: Number.isFinite(volume) ? Math.max(0, Math.min(1, volume)) : 0.5 };
+        });
+      this.presets = this.readList(PRESETS_KEY, 'nestafocus_sound_presets_v3').map((preset) => {
+        const sounds = Array.isArray(preset?.sounds)
+          ? [...new Set(preset.sounds.map((id) => SOUND_ID_ALIASES[id] || id))]
+          : [];
+        const volumes = { ...(preset?.volumes || {}) };
+        if (Object.prototype.hasOwnProperty.call(volumes, 'cc0_cafe')) {
+          if (!Object.prototype.hasOwnProperty.call(volumes, 'cafe')) volumes.cafe = volumes.cc0_cafe;
+          delete volumes.cc0_cafe;
+        }
+        return { ...preset, sounds, volumes };
+      });
+      this.favorites = this.readList(FAVORITES_KEY, 'nestafocus_music_favorites_v1');
+    }
+
+    readList(key, ...legacyKeys) {
+      for (const storageKey of [key, ...legacyKeys]) {
+        const value = readStorage(storageKey, null);
+        if (Array.isArray(value)) return value;
+      }
+      return [];
+    }
+
+    persist(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+        return true;
+      } catch (error) {
+        console.error(`Studio : impossible d'enregistrer ${key}.`, error);
+        this.setStatus('Enregistrement impossible sur cet appareil.', true);
+        return false;
+      }
+    }
+
+    saveState() {
+      this.persist(STATE_KEY, { active: this.selected, masterVolume: this.masterVolume });
+    }
+
+    render() {
+      this.shadowRoot.innerHTML = `
+        <style>
+          :host{--abyss:#022a71;--ink:#101827;--orange:#f66624;--sand:#e3d594;--purple:#855c9e;--paper:#fffdf6;position:fixed;inset:0;z-index:5000;pointer-events:none;color:var(--paper);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+          *{box-sizing:border-box}[hidden]{display:none!important}button,input{font:inherit}button{color:inherit}
+          .popover{position:fixed;z-index:2;display:flex;width:min(560px,calc(100vw - 24px));height:min(650px,calc(100dvh - 100px));flex-direction:column;overflow:hidden;padding:20px 22px 18px;border:1px solid rgba(227,213,148,.33);border-radius:20px;background:linear-gradient(145deg,rgba(2,42,113,.97),rgba(16,24,39,.98) 78%);box-shadow:0 20px 70px rgba(0,0,0,.4),inset 0 1px rgba(255,255,255,.09);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(7px);transition:opacity .16s ease,transform .16s ease,visibility .16s}
+          :host([open]) .popover{opacity:1;visibility:visible;pointer-events:auto;transform:translateY(0)}
+          .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:31px}
+          .panel-brand{display:flex;align-items:center;gap:9px}.brand-mark{display:grid;width:29px;height:29px;place-items:center;border:1px solid rgba(227,213,148,.34);border-radius:9px;background:rgba(227,213,148,.09);color:var(--sand)}
+          .brand-mark svg{width:16px;height:16px}.brand-name{font-size:11px;font-weight:700;letter-spacing:.025em}.brand-caption{margin-top:3px;color:rgba(255,253,246,.54);font-size:8px}
+          .head-actions{display:flex;align-items:center;gap:7px}.tab-nav{display:flex;gap:3px;padding:3px;border:1px solid rgba(255,253,246,.1);border-radius:9px;background:rgba(0,0,0,.12)}
+          .tab-nav button{padding:5px 8px;border:0;border-radius:6px;background:transparent;color:rgba(255,253,246,.63);cursor:pointer;font-size:8px}
+          .tab-nav button[aria-selected="true"]{background:rgba(246,102,36,.2);color:#ffd4bd}
+          .icon-button{display:grid;width:28px;height:28px;place-items:center;border:1px solid rgba(255,253,246,.11);border-radius:8px;background:rgba(255,253,246,.04);color:rgba(255,253,246,.76);cursor:pointer}
+          .icon-button svg{width:14px;height:14px}
+          .page{display:flex;flex:1;min-height:0;flex-direction:column;padding-top:12px}.page[hidden]{display:none}
+          .intro{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+          .intro-title{margin:0;color:var(--paper);font-size:11px;font-weight:600}.intro-caption{margin:3px 0 0;color:rgba(255,253,246,.5);font-size:8px}
+          .random{display:flex;align-items:center;gap:5px;padding:5px 8px;border:1px solid rgba(246,102,36,.4);border-radius:8px;background:rgba(246,102,36,.12);color:#ffc19f;cursor:pointer;font-size:8px}
+          .random svg{width:12px;height:12px}
+          .search{display:flex;align-items:center;gap:7px;height:32px;padding:0 9px;border:1px solid rgba(255,253,246,.13);border-radius:8px;background:rgba(0,0,0,.15);color:rgba(255,253,246,.5)}
+          .search svg{width:13px;height:13px}.search input,.link-form input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:var(--paper);font-size:9px}
+          .search input::placeholder,.link-form input::placeholder{color:rgba(255,253,246,.43)}
+          .categories{display:flex;flex-wrap:wrap;gap:5px;overflow:visible;margin:8px 0 7px;padding-bottom:2px}
+          .chip{flex:0 0 auto;padding:5px 8px;border:1px solid rgba(255,253,246,.12);border-radius:999px;background:transparent;color:rgba(255,253,246,.65);cursor:pointer;font-size:8px}
+          .chip.active{border-color:rgba(246,102,36,.6);background:rgba(246,102,36,.14);color:#ffd2bb}
+          .source-link{color:#a7d6d5;text-decoration:underline;text-underline-offset:2px}
+          .sound-list{display:grid;flex:1;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:5px;overflow:auto;min-height:65px;padding:1px 2px 6px 0;scrollbar-color:rgba(227,213,148,.3) transparent;scrollbar-width:thin}
+          .sound{display:grid;min-width:0;min-height:38px;grid-template-columns:25px minmax(0,1fr) 18px;align-items:center;gap:7px;padding:5px 7px;border:1px solid rgba(255,253,246,.1);border-radius:8px;background:rgba(255,253,246,.045);cursor:pointer;text-align:left;transition:background .12s,border-color .12s}
+          .sound:hover{border-color:rgba(227,213,148,.38);background:rgba(255,253,246,.09)}.sound.selected{border-color:rgba(246,102,36,.58);background:rgba(246,102,36,.12)}
+          .sound-mark{display:grid;width:24px;height:24px;place-items:center;border-radius:7px;background:rgba(2,42,113,.6);color:#92cbd1}
+          .sound-mark svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+          .sound.selected .sound-mark{background:rgba(246,102,36,.16);color:#ffb186}
+          .sound-copy{min-width:0}          .sound-name{display:block;overflow:hidden;color:var(--paper);font-size:9px;font-weight:550;text-overflow:ellipsis;white-space:nowrap}
+          .sound-meta{display:block;overflow:hidden;margin-top:3px;color:rgba(255,253,246,.58);font-size:8px;text-overflow:ellipsis;white-space:nowrap}
+          .sound-license{display:inline-block;margin-left:5px;padding:1px 4px;border:1px solid rgba(167,214,213,.34);border-radius:999px;color:#a7d6d5;font-size:7px;line-height:1.2}
+          .sound-action{display:grid;width:17px;height:17px;place-items:center;color:rgba(255,253,246,.6)}
+          .sound-action svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+          .empty{grid-column:1/-1;margin:0;padding:16px 8px;color:rgba(255,253,246,.56);font-size:9px;text-align:center}
+          .mix{flex:0 0 auto;margin-top:6px;padding-top:8px;border-top:1px solid rgba(255,253,246,.11)}
+          .mix-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+          .mix-title{margin:0;color:rgba(255,253,246,.82);font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+          .mix-count{color:rgba(255,253,246,.6);font-size:9px}
+          .mix-list{display:flex;max-height:76px;flex-direction:column;gap:4px;overflow:auto}
+          .mix-empty{margin:0;padding:4px 0;color:rgba(255,253,246,.46);font-size:8px}
+          .mix-row{display:grid;grid-template-columns:17px minmax(0,1fr) 66px 20px;align-items:center;gap:6px;min-height:25px;padding:2px 5px;border:1px solid rgba(255,253,246,.09);border-radius:7px;background:rgba(0,0,0,.1)}
+          .mix-row-icon svg{width:12px;height:12px;fill:none;stroke:#9bcbd0;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+          .mix-row-name{overflow:hidden;color:rgba(255,253,246,.8);font-size:8px;text-overflow:ellipsis;white-space:nowrap}
+          .mix-row input{width:100%;height:13px;accent-color:var(--orange);cursor:pointer}
+          .remove{display:grid;width:18px;height:18px;place-items:center;border:0;border-radius:5px;background:transparent;color:rgba(255,253,246,.48);cursor:pointer;font-size:13px}
+          .preset-tools{display:flex;align-items:center;gap:6px;min-height:21px;margin-top:5px}
+          .preset-tools>span{flex:0 0 auto;color:rgba(255,253,246,.48);font-size:7px}
+          .preset-save{flex:0 0 auto;padding:4px 6px;border:1px solid rgba(227,213,148,.22);border-radius:6px;background:rgba(227,213,148,.06);color:var(--sand);cursor:pointer;font-size:7px}
+          .preset-save:disabled{cursor:not-allowed;opacity:.4}
+          .preset-list{display:flex;min-width:0;gap:4px;overflow-x:auto;scrollbar-width:none}.preset-list::-webkit-scrollbar{display:none}
+          .preset-list .favorite{flex:0 0 auto;padding:3px 4px}
+          .preset-form{display:flex;gap:5px;margin-top:5px}.preset-form input{flex:1;min-width:0;padding:5px 7px;border:1px solid rgba(255,253,246,.13);border-radius:6px;background:rgba(0,0,0,.12);color:var(--paper);font-size:8px}
+          .preset-form button{padding:4px 6px;border:1px solid rgba(255,253,246,.13);border-radius:6px;background:rgba(255,253,246,.05);color:var(--paper);cursor:pointer;font-size:7px}
+          .controls{display:flex;align-items:center;gap:8px;margin-top:8px}
+          .master{display:flex;flex:1;align-items:center;gap:6px;min-width:0;color:rgba(255,253,246,.69);font-size:8px}
+          .master input{flex:1;min-width:20px;height:14px;accent-color:var(--orange);cursor:pointer}.master output{width:23px;color:var(--sand);font-size:8px;text-align:right}
+          .transport{display:flex;align-items:center;gap:5px}.transport button{display:grid;width:26px;height:26px;place-items:center;border:1px solid rgba(255,253,246,.15);border-radius:8px;background:rgba(255,253,246,.05);color:var(--paper);cursor:pointer}
+          .transport button.primary{border-color:var(--orange);background:var(--orange);color:var(--ink)}.transport button:disabled{cursor:not-allowed;opacity:.38}.transport svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+          .timer{display:flex;align-items:center;gap:8px;margin-top:8px}
+          .timer-label{display:flex;align-items:center;gap:5px;flex:0 0 auto;color:rgba(255,253,246,.65);font-size:8px}.timer-label svg{width:12px;height:12px;fill:none;stroke:var(--sand);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+          .timer-display{margin-left:auto;color:var(--sand);font-size:8px;font-variant-numeric:tabular-nums}
+          .timer-options{display:flex;gap:3px}          .timer-options button{padding:4px 6px;border:1px solid rgba(255,253,246,.11);border-radius:6px;background:transparent;color:rgba(255,253,246,.66);cursor:pointer;font-size:8px}
+          .timer-options button.active{border-color:rgba(246,102,36,.55);background:rgba(246,102,36,.15);color:#ffc29f}
+          .status{min-height:12px;margin:5px 0 0;color:#e3d594;font-size:8px;line-height:1.4}.status.error{color:#ff9a87}
+          .music-page{gap:9px}.music-heading{margin-bottom:8px}.music-heading strong{display:block;color:var(--paper);font-size:11px;font-weight:600}.music-heading span{display:block;margin-top:3px;color:rgba(255,253,246,.5);font-size:8px}
+          .link-form{display:flex;gap:6px;padding:5px 5px 5px 9px;border:1px solid rgba(255,253,246,.13);border-radius:8px;background:rgba(0,0,0,.14)}
+          .link-form button{display:flex;align-items:center;gap:4px;padding:0 8px;border:0;border-radius:6px;background:var(--orange);color:var(--ink);cursor:pointer;font-size:8px;font-weight:650;white-space:nowrap}
+          .link-form button svg{width:11px;height:11px}.playlist-heading{margin:8px 0 5px;color:rgba(255,253,246,.6);font-size:8px;font-weight:650}
+          .playlists{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+          .playlist{display:flex;align-items:center;gap:7px;min-width:0;min-height:34px;padding:5px 7px;border:1px solid rgba(255,253,246,.1);border-radius:7px;background:rgba(255,253,246,.045);cursor:pointer;text-align:left}
+          .playlist:hover{background:rgba(255,253,246,.09)}.playlist-mark{display:grid;width:22px;height:22px;flex:0 0 22px;place-items:center;border-radius:6px;background:rgba(133,92,158,.28);color:#dec9e9}
+          .playlist-mark svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+          .playlist-copy{overflow:hidden}.playlist-copy strong{display:block;overflow:hidden;color:rgba(255,253,246,.86);font-size:8px;font-weight:550;text-overflow:ellipsis;white-space:nowrap}
+          .playlist-copy small{display:block;margin-top:2px;color:rgba(255,253,246,.42);font-size:7px}
+          .music-bottom{display:grid;flex:1;min-height:180px;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:8px;overflow:hidden;margin-top:7px;padding-top:7px;border-top:1px solid rgba(255,253,246,.11)}
+          .music-bottom>section{min-width:0;min-height:0;overflow:auto}.music-bottom>section:first-child{max-height:64px}.music-bottom h3{margin:0 0 5px;color:rgba(255,253,246,.61);font-size:8px;font-weight:650}
+          .favorite-list{display:flex;flex-wrap:wrap;gap:4px}.favorite{display:inline-flex;align-items:center;gap:4px;max-width:100%;padding:3px 5px;border:1px solid rgba(255,253,246,.12);border-radius:6px;background:rgba(255,253,246,.04)}
+          .favorite button{max-width:112px;overflow:hidden;border:0;background:transparent;color:rgba(255,253,246,.75);cursor:pointer;font-size:7px;text-overflow:ellipsis;white-space:nowrap}
+          .favorite button:last-child{padding:0 2px;color:rgba(255,253,246,.42)}
+          .music-player{display:flex;min-height:0;flex-direction:column;gap:5px;overflow:hidden}
+          .music-player-heading{display:flex;align-items:center;justify-content:space-between;color:rgba(255,253,246,.8);font-size:8px}
+          .favorite-name{width:100%;padding:6px 8px;border:1px solid rgba(255,253,246,.13);border-radius:7px;background:rgba(0,0,0,.12);color:var(--paper);font-size:8px}
+          .save-favorite{display:flex;align-items:center;gap:4px;align-self:flex-start;padding:5px 7px;border:1px solid rgba(227,213,148,.26);border-radius:7px;background:rgba(227,213,148,.08);color:var(--sand);cursor:pointer;font-size:7px}
+          .save-favorite svg{width:11px;height:11px}
+          .music-player iframe{flex:1;width:100%;min-height:100px;border:1px solid rgba(255,253,246,.12);border-radius:9px;background:#101827}
+          .music-empty{display:flex;flex:1;align-items:center;justify-content:center;gap:8px;padding:8px;border:1px dashed rgba(255,253,246,.15);border-radius:8px;color:rgba(255,253,246,.48);font-size:8px;text-align:center}
+          .music-empty svg{width:15px;height:15px;flex:0 0 15px;color:var(--sand)}
+          .island-wrap{position:fixed;z-index:3;top:54px;left:50%;width:min(330px,calc(100vw - 28px));pointer-events:auto;transform:translateX(-50%)}
+          .island-pill{display:flex;width:100%;min-height:39px;align-items:center;gap:9px;padding:6px 11px;border:1px solid rgba(227,213,148,.3);border-radius:999px;background:linear-gradient(110deg,#101827,#022a71);box-shadow:0 7px 30px rgba(0,0,0,.24),inset 0 1px rgba(255,255,255,.08);color:var(--paper);cursor:pointer}
+          .island-mark{display:grid;width:23px;height:23px;flex:0 0 23px;place-items:center;border-radius:50%;background:rgba(246,102,36,.18);color:var(--orange)}
+          .island-mark svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+          .island-copy{display:flex;flex:1;align-items:center;justify-content:space-between;gap:8px;min-width:0}
+          .island-track{overflow:hidden;color:rgba(255,253,246,.9);font-size:9px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+          .island-clock{flex:0 0 auto;color:var(--sand);font-size:8px;font-variant-numeric:tabular-nums}
+          .island-bars{display:flex;height:15px;align-items:center;gap:2px}.island-bars i{width:2px;height:var(--bar);border-radius:2px;background:var(--orange);opacity:.55}
+          :host([playing]) .island-bars i{animation:island-wave .65s ease-in-out infinite alternate;animation-delay:var(--delay)}
+          @keyframes island-wave{to{transform:scaleY(.35);opacity:1}}
+          .island-expanded{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;overflow:hidden;max-height:0;padding:0 14px;border:1px solid transparent;border-radius:0 0 15px 15px;background:#101827;opacity:0;transition:max-height .2s ease,padding .2s ease,opacity .18s ease}
+          :host([island-expanded]) .island-pill{border-radius:15px 15px 0 0}
+          :host([island-expanded]) .island-expanded{max-height:104px;padding:11px 14px 12px;border-color:rgba(227,213,148,.3);border-top:0;opacity:1}
+          .island-detail-title{overflow:hidden;color:var(--paper);font-size:9px;font-weight:600;text-overflow:ellipsis;white-space:nowrap}
+          .island-detail-sub{margin-top:3px;color:rgba(255,253,246,.62);font-size:8px}
+          .island-detail-times{display:flex;align-items:center;gap:10px;color:var(--sand);font-size:8px;white-space:nowrap}
+          .island-detail-times span+span{padding-left:9px;border-left:1px solid rgba(255,253,246,.16)}
+          .island-actions{display:flex;align-items:center;gap:5px}
+          .island-actions button{display:grid;width:24px;height:24px;place-items:center;border:1px solid rgba(255,253,246,.13);border-radius:7px;background:rgba(255,253,246,.06);color:var(--paper);cursor:pointer}
+          .island-actions button:disabled{cursor:not-allowed;opacity:.38}
+          .island-actions button svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+          :host(:not([has-audio])) .island-wrap{display:none}
+          .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+          @media(min-width:761px){
+            .page[data-page="sounds"]{display:grid;grid-template-columns:minmax(0,1fr) 224px;grid-template-rows:auto auto auto minmax(0,1fr);grid-template-areas:"intro intro" "search mix" "categories mix" "catalog mix";column-gap:16px;row-gap:9px;padding-top:17px}
+            .intro{grid-area:intro;margin:0 0 3px}.intro-title{font-size:15px}.intro-caption{font-size:11px}
+            .random{gap:7px;padding:8px 10px;font-size:10px}.random svg{width:14px;height:14px}
+            .search{grid-area:search;height:40px;padding:0 11px;border-radius:10px}.search input{font-size:12px}.search svg{width:15px;height:15px}
+            .categories{grid-area:categories;gap:7px;margin:0;padding:2px 0 5px}.chip{padding:7px 10px;font-size:10px}
+            .sound-list{grid-area:catalog;grid-template-columns:minmax(0,1fr);gap:7px;min-height:0;padding:1px 3px 6px 0}
+            .sound{min-height:50px;grid-template-columns:30px minmax(0,1fr) 20px;gap:10px;padding:8px 10px;border-radius:11px}
+            .sound-mark{width:29px;height:29px;border-radius:9px}.sound-mark svg{width:16px;height:16px}
+            .sound-name{font-size:12px}.sound-meta{margin-top:4px;font-size:10px}
+            .sound-action{width:20px;height:20px}.sound-action svg{width:15px;height:15px}
+            .mix{grid-area:mix;display:flex;min-width:0;min-height:0;flex-direction:column;overflow:auto;margin:0;padding:15px 13px;border:1px solid rgba(255,253,246,.11);border-radius:15px;background:rgba(0,0,0,.13)}
+            .mix-head{margin-bottom:9px}.mix-title{font-size:12px}.mix-count{font-size:11px}
+            .mix-list{max-height:none;flex:1;gap:6px}.mix-empty{font-size:10px}
+            .mix-row{grid-template-columns:18px minmax(0,1fr) 64px 21px;gap:6px;min-height:34px;padding:4px 6px;border-radius:9px}
+            .mix-row-name{font-size:10px}.mix-row input{height:16px}.remove{width:20px;height:20px;font-size:15px}
+            .controls{gap:8px;margin-top:13px}.master{gap:7px;font-size:10px}.master output{width:30px;font-size:10px}
+            .transport{gap:6px}.transport button{width:32px;height:32px;border-radius:9px}.transport svg{width:15px;height:15px}
+            .preset-tools{flex-wrap:wrap;gap:7px;min-height:26px;margin-top:12px}.preset-tools>span{font-size:9px}
+            .preset-save{padding:6px 8px;font-size:9px}.preset-list{flex-basis:100%;gap:6px}.preset-list .favorite{padding:5px 6px}
+            .preset-form{gap:7px;margin-top:8px}.preset-form input,.preset-form button{padding:7px 9px;font-size:10px}
+            .timer{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:13px}
+            .timer-label{grid-column:1;grid-row:1;gap:7px;font-size:10px}.timer-label svg{width:15px;height:15px}
+            .timer-display{grid-column:2;grid-row:1;font-size:11px}
+            .timer-options{grid-column:1/-1;grid-row:2;gap:5px}.timer-options button{flex:1;padding:6px 5px;font-size:10px}
+            .status{min-height:15px;margin-top:9px;font-size:10px}
+            .music-page{gap:11px;padding-top:18px}.music-heading{margin-bottom:0}.music-heading strong{font-size:16px}.music-heading span{font-size:11px}
+            .link-form{gap:8px;padding:7px 7px 7px 12px;border-radius:10px}.link-form input{font-size:12px}.link-form button{gap:6px;padding:0 11px;font-size:10px}
+            .link-form button svg{width:14px;height:14px}
+            .service-section{display:flex;flex-direction:column;gap:7px}.service-title{color:rgba(255,253,246,.7);font-size:10px;font-weight:650}
+            .service-list{display:flex;flex-wrap:wrap;gap:6px}.service-list span{padding:5px 8px;border:1px solid rgba(255,253,246,.12);border-radius:999px;background:rgba(255,253,246,.04);color:rgba(255,253,246,.75);font-size:10px}
+            .service-note{margin:0;color:rgba(255,253,246,.48);font-size:9px;line-height:1.45}
+            .playlist-heading{margin:6px 0 0;font-size:10px}.playlists{gap:7px}.playlist{min-height:42px;padding:7px 9px;border-radius:9px}.playlist-mark{width:28px;height:28px;flex-basis:28px}
+            .playlist-mark svg{width:15px;height:15px}.playlist-copy strong{font-size:10px}.playlist-copy small{font-size:9px}
+            .music-bottom{gap:10px;margin-top:2px;padding-top:11px}.music-bottom>section:first-child{max-height:72px}.music-bottom h3{margin-bottom:8px;font-size:10px}
+            .favorite{gap:5px;padding:5px 7px;border-radius:8px}.favorite button{font-size:9px}.favorite button:last-child{font-size:12px}
+            .music-player{gap:8px}.music-player-heading{font-size:10px}.favorite-name{padding:8px 10px;font-size:10px}
+            .save-favorite{gap:6px;padding:7px 9px;font-size:9px}.save-favorite svg{width:13px;height:13px}
+            .music-player iframe{min-height:160px;border-radius:11px}.music-empty{gap:10px;font-size:10px}.music-empty svg{width:18px;height:18px;flex-basis:18px}
+          }
+          @media(max-width:760px){
+            .popover{top:68px!important;right:12px;left:12px;width:auto;height:min(460px,calc(100dvh - 88px))!important;padding:15px 14px 12px;border-radius:16px}
+            .page{padding-top:11px}.intro-title{font-size:13px}.intro-caption{font-size:10px}
+            .random{gap:6px;padding:7px 9px;font-size:9px}.random svg{width:13px;height:13px}
+            .search{height:38px}.search input{font-size:11px}
+            .categories{gap:6px;margin:8px 0 8px}.chip{padding:6px 9px;font-size:9px}
+            .sound-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;min-height:55px}
+            .sound{min-height:43px;grid-template-columns:25px minmax(0,1fr) 18px;gap:6px;padding:6px 7px}
+            .sound-mark{width:24px;height:24px}.sound-name{font-size:10px}.sound-meta{font-size:8px}
+            .mix{margin-top:8px;padding-top:10px}.mix-list{max-height:64px;gap:5px}.mix-row{min-height:28px;grid-template-columns:18px minmax(0,1fr) 66px 20px}
+            .mix-row-name{font-size:9px}.controls{gap:7px;margin-top:9px}.master{font-size:9px}.transport button{width:30px;height:30px}
+            .preset-tools{gap:6px;min-height:24px;margin-top:8px}.preset-tools>span{font-size:8px}.preset-save{padding:5px 7px;font-size:8px}
+            .timer{gap:6px;margin-top:8px}.timer-label{gap:5px;font-size:9px}.timer-options{gap:4px}.timer-options button{padding:5px 6px;font-size:9px}.timer-display{font-size:9px}
+            .status{min-height:14px;margin-top:6px;font-size:9px}
+            .island-wrap{top:54px;width:min(310px,calc(100vw - 28px))}            .music-page{gap:9px;overflow-y:auto;scrollbar-width:thin}.music-heading strong{font-size:14px}.music-heading span{font-size:10px}
+            .link-form{gap:5px;padding:6px 6px 6px 9px}.link-form input{font-size:10px}.link-form button{padding:0 8px;font-size:9px}
+            .service-section{display:flex;flex-direction:column;gap:6px}.service-title{font-size:9px;font-weight:650;color:rgba(255,253,246,.7)}
+            .service-list{display:flex;flex-wrap:nowrap;gap:5px;overflow-x:auto;padding-bottom:3px;scrollbar-width:thin}.service-list span{flex:0 0 auto;padding:4px 7px;border:1px solid rgba(255,253,246,.12);border-radius:999px;background:rgba(255,253,246,.04);color:rgba(255,253,246,.75);font-size:8px}
+            .service-note{display:none}
+            .playlists{display:flex;gap:5px;overflow-x:auto;padding-bottom:3px;scrollbar-width:thin}.playlist{min-height:34px;flex:0 0 140px;padding:5px 7px}.playlist-mark{width:23px;height:23px;flex-basis:23px}.playlist-copy strong{font-size:9px}.playlist-copy small{font-size:8px}
+            :host([open]) .island-wrap{top:calc(68px + min(460px, 100dvh - 88px) + 8px)}
+            .music-bottom{flex:1;min-height:200px;gap:8px;margin-top:4px;padding-top:7px}.music-bottom>section:first-child{max-height:54px}.music-bottom h3{font-size:9px}.music-player iframe{min-height:100px}
+          }
+          @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+        </style>
+        <section class="popover" data-popover aria-label="Studio sonore">
+          <header class="panel-head">
+            <div class="panel-brand"><span class="brand-mark">${icon('sound')}</span><div><div class="brand-name">Studio sonore</div><div class="brand-caption">Votre ambiance, sans quitter le focus</div></div></div>
+            <div class="head-actions">
+              <nav class="tab-nav" aria-label="Contenu du Studio"><button type="button" data-tab="sounds" aria-selected="true">Ambiance</button><button type="button" data-tab="music" aria-selected="false">Musique</button></nav>
+              <button type="button" class="icon-button" data-close aria-label="Fermer le Studio">${icon('close')}</button>
+            </div>
+          </header>
+          <section class="page" data-page="sounds">
+            <div class="intro"><div><h2 class="intro-title">Composer une ambiance</h2><p class="intro-caption">${Object.keys(this.sounds).length} sons gratuits · jusqu’à cinq en même temps · <a class="source-link" href="resources/sounds/cc0/SOURCES.txt" target="_blank" rel="noopener">${CC0_SOUNDS.length} sources CC0</a></p></div><button class="random" type="button" data-surprise>${icon('shuffle')}<span>Surprendre</span></button></div>
+            <label class="search">${icon('search')}<input type="search" placeholder="Rechercher un son" aria-label="Rechercher un son" data-search></label>
+            <div class="categories" data-categories aria-label="Filtrer par catégorie"></div>
+            <div class="sound-list" data-sound-list></div>
+            <section class="mix"><div class="mix-head"><h3 class="mix-title">Votre mix</h3><span class="mix-count" data-mix-count>0 / ${MAX_ACTIVE}</span></div><div class="mix-list" data-mix-list></div>
+              <div class="controls"><label class="master"><span>Volume</span><input type="range" min="0" max="1" step="0.01" value="${this.masterVolume}" data-master aria-label="Volume général"><output data-master-value>80%</output></label>
+                <div class="transport"><button type="button" data-stop aria-label="Arrêter et vider le mix" disabled>${icon('stop')}</button><button type="button" class="primary" data-play aria-label="Lancer le mix" disabled>${icon('play')}</button></div>
+              </div>
+              <div class="preset-tools"><span>Mes mix</span><button class="preset-save" type="button" data-save-preset disabled>Enregistrer</button><div class="preset-list" data-preset-list></div></div>
+              <form class="preset-form" data-preset-form hidden><label class="sr-only" for="studio-preset-name">Nom du mix</label><input id="studio-preset-name" required maxlength="40" placeholder="Nom du mix"><button type="submit">OK</button><button type="button" data-cancel-preset aria-label="Annuler">×</button></form>
+              <div class="timer"><span class="timer-label">${icon('timer')}<span>Arrêt auto.</span></span><div class="timer-options" aria-label="Durée de la session"><button type="button" data-timer="0" class="active">Libre</button><button type="button" data-timer="25">25m</button><button type="button" data-timer="50">50m</button><button type="button" data-timer="90">90m</button></div><span class="timer-display" data-timer-display>--:--</span></div>
+              <p class="status" role="status" aria-live="polite" data-status></p>
+            </section>
+          </section>
+          <section class="page music-page" data-page="music" hidden>
+            <div class="music-heading"><strong>Vos plateformes musicales</strong><span>Retrouvez vos services favoris dans le Studio.</span></div>
+            <form class="link-form" data-link-form><input type="url" required placeholder="Collez un lien Spotify, Deezer, Tidal…" aria-label="Lien de musique"><button type="submit">${icon('link')}<span>Intégrer</span></button></form>
+            <div class="service-section"><div class="service-title">Lecteurs compatibles</div><div class="service-list"><span>Spotify</span><span>Deezer</span><span>Tidal</span><span>YouTube Music</span><span>Apple Music</span><span>SoundCloud</span><span>Amazon Music</span></div><p class="service-note">Le lecteur officiel s’affiche ici. La lecture peut nécessiter un compte ou une connexion au service.</p></div>
+            <p class="status" role="status" aria-live="polite" data-music-status></p>
+            <div class="playlist-heading">Sélections à découvrir</div><div class="playlists" data-playlists></div>
+            <div class="music-bottom"><section><h3>Vos favoris</h3><div class="favorite-list" data-favorites></div></section><section class="music-player" data-player><div class="music-empty">${icon('music')}<span>Le lecteur apparaîtra ici.</span></div></section></div>
+          </section>
+        </section>
+        <aside class="island-wrap" aria-label="Lecture en cours">
+          <button type="button" class="island-pill" data-island-toggle aria-expanded="false">
+            <span class="island-mark">${icon('sound')}</span><span class="island-copy"><span class="island-track" data-island-track>Son en cours</span><span class="island-clock" data-site-clock>--:--</span></span>
+            <span class="island-bars" aria-hidden="true">${[7, 11, 5, 14, 8, 12, 6].map((height, index) => `<i style="--bar:${height}px;--delay:${index * -.08}s"></i>`).join('')}</span>
+          </button>
+          <div class="island-expanded">
+            <div><div class="island-detail-title" data-island-detail>Votre mix sonore</div><div class="island-detail-sub" data-island-clock-label>HORLOGE DU SITE</div></div>
+            <div class="island-detail-times"><span data-island-site-time>--:--</span><span data-island-audio-time>Sans limite</span></div>
+            <div class="island-detail-sub" data-island-audio-label>SON AMBIANT</div>
+            <div class="island-actions"><button type="button" data-island-stop aria-label="Arrêter le mix">${icon('stop')}</button><button type="button" data-island-play aria-label="Mettre en pause">${icon('pause')}</button><button type="button" data-island-open aria-label="Ouvrir le Studio">${icon('sound')}</button></div>
+          </div>
+        </aside>`;
+      this.renderCategories();
+      this.renderPlaylists();
+    }
+
+    bindEvents() {
+      this.shadowRoot.addEventListener('click', (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+        if (button.matches('[data-close]')) this.close();
+        if (button.matches('[data-tab]')) this.switchTab(button.dataset.tab);
+        if (button.matches('[data-category]')) this.setCategory(button.dataset.category);
+        if (button.matches('[data-sound-id]')) this.toggleSound(button.dataset.soundId);
+        if (button.matches('[data-remove]')) this.toggleSound(button.dataset.remove);
+        if (button.matches('[data-play], [data-island-play]')) this.togglePlayback();
+        if (button.matches('[data-stop], [data-island-stop]')) this.stopMix();
+        if (button.matches('[data-surprise]')) this.addRandomSound();
+        if (button.matches('[data-timer]')) this.startTimer(Number(button.dataset.timer));
+        if (button.matches('[data-island-toggle]')) {
+          const expanded = !this.hasAttribute('island-expanded');
+          this.toggleAttribute('island-expanded', expanded);
+          button.setAttribute('aria-expanded', String(expanded));
+        }
+        if (button.matches('[data-island-open]')) this.open();
+        if (button.matches('[data-save-preset]')) {
+          const form = this.shadowRoot.querySelector('[data-preset-form]');
+          form.hidden = false;
+          form.querySelector('input').focus();
+        }
+        if (button.matches('[data-cancel-preset]')) this.shadowRoot.querySelector('[data-preset-form]').hidden = true;
+        if (button.matches('[data-preset]')) this.loadPreset(Number(button.dataset.preset));
+        if (button.matches('[data-delete-preset]')) this.removePreset(Number(button.dataset.deletePreset));
+        if (button.matches('[data-playlist]')) this.loadMusic(`https://open.spotify.com/playlist/${button.dataset.playlist}`);
+        if (button.matches('[data-favorite]')) this.loadMusic(this.favorites[Number(button.dataset.favorite)]?.url);
+        if (button.matches('[data-delete-favorite]')) this.removeFavorite(Number(button.dataset.deleteFavorite));
+        if (button.matches('[data-save-favorite]')) this.saveFavorite();
+      });
+
+      this.shadowRoot.addEventListener('input', (event) => {
+        if (event.target.matches('[data-search]')) {
+          this.query = event.target.value.trim().toLocaleLowerCase();
+          this.renderSounds();
+        }
+        if (event.target.matches('[data-volume-id]')) this.setVolume(event.target.dataset.volumeId, Number(event.target.value));
+        if (event.target.matches('[data-master]')) this.setMasterVolume(Number(event.target.value));
+      });
+
+      this.shadowRoot.querySelector('[data-preset-form]').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const input = event.currentTarget.querySelector('input');
+        const name = input.value.trim().slice(0, 40);
+        if (!name || !this.selected.length) return;
+        this.presets.push({
+          name,
+          sounds: this.selected.map(({ id }) => id),
+          volumes: Object.fromEntries(this.selected.map(({ id, volume }) => [id, volume])),
+        });
+        this.persist(PRESETS_KEY, this.presets);
+        input.value = '';
+        event.currentTarget.hidden = true;
+        this.renderPresets();
+      });
+
+      this.shadowRoot.querySelector('[data-link-form]').addEventListener('submit', (event) => {
+        event.preventDefault();
+        this.loadMusic(event.currentTarget.querySelector('input').value);
+      });
+    }
+
+    renderCategories() {
+      const categories = ['all', ...new Set(Object.values(this.sounds).flatMap((sound) => sound.tags || []))];
+      this.shadowRoot.querySelector('[data-categories]').innerHTML = categories.map((category) => {
+        const label = category === 'all' ? 'Tout' : CATEGORY_NAMES[category] || category;
+        return `<button class="chip${category === this.category ? ' active' : ''}" type="button" data-category="${escapeHtml(category)}">${escapeHtml(label)}</button>`;
+      }).join('');
+    }
+
+    setCategory(category) {
+      this.category = category;
+      this.renderCategories();
+      this.renderSounds();
+    }
+
+    renderSounds() {
+      const entries = Object.entries(this.sounds).filter(([id, sound]) => {
+        if (id === 'none') return false;
+        const categoryMatch = this.category === 'all' || (sound.tags || []).includes(this.category);
+        return categoryMatch && `${sound.name} ${sound.description || ''}`.toLocaleLowerCase().includes(this.query);
+      });
+      this.shadowRoot.querySelector('[data-sound-list]').innerHTML = entries.length
+        ? entries.map(([id, sound]) => {
+          const active = this.selected.some((item) => item.id === id);
+          const category = (sound.tags || []).map((tag) => CATEGORY_NAMES[tag] || tag).join(' · ');
+          const title = sound.sourceUrl ? `${sound.title || sound.name} — ${sound.creator} · ${sound.license}` : sound.name;
+          return `<button type="button" class="sound${active ? ' selected' : ''}" data-sound-id="${escapeHtml(id)}" aria-pressed="${active}" title="${escapeHtml(title)}">
+            <span class="sound-mark">${icon('sound')}</span><span class="sound-copy"><span class="sound-name">${escapeHtml(sound.name)}</span><span class="sound-meta">${escapeHtml(category)}${sound.license ? '<span class="sound-license">CC0</span>' : ''}</span></span><span class="sound-action">${active ? icon('check') : icon('plus')}</span>
+          </button>`;
+        }).join('')
+        : '<p class="empty">Aucun son ne correspond à cette recherche.</p>';
+    }
+
+    renderMix() {
+      const list = this.shadowRoot.querySelector('[data-mix-list]');
+      list.innerHTML = this.selected.length
+        ? this.selected.map(({ id, volume }) => `<div class="mix-row">
+            <span class="mix-row-icon">${icon('sound')}</span><span class="mix-row-name">${escapeHtml(this.sounds[id]?.name || id)}</span>
+            <label><span class="sr-only">Volume ${escapeHtml(this.sounds[id]?.name || id)}</span><input type="range" min="0" max="1" step="0.01" value="${volume}" data-volume-id="${escapeHtml(id)}"></label>
+            <button class="remove" type="button" data-remove="${escapeHtml(id)}" aria-label="Retirer ${escapeHtml(this.sounds[id]?.name || id)}">×</button>
+          </div>`).join('')
+        : '<p class="mix-empty">Ajoutez un son pour commencer.</p>';
+      this.shadowRoot.querySelector('[data-mix-count]').textContent = `${this.selected.length} / ${MAX_ACTIVE}`;
+      this.shadowRoot.querySelector('[data-master]').value = String(this.masterVolume);
+      this.shadowRoot.querySelector('[data-master-value]').textContent = `${Math.round(this.masterVolume * 100)}%`;
+      this.shadowRoot.querySelector('[data-play]').disabled = !this.selected.length;
+      this.shadowRoot.querySelector('[data-stop]').disabled = !this.selected.length;
+      this.shadowRoot.querySelector('[data-save-preset]').disabled = !this.selected.length;
+      this.shadowRoot.querySelector('[data-play]').innerHTML = icon(this.playing ? 'pause' : 'play');
+      this.shadowRoot.querySelector('[data-play]').setAttribute('aria-label', this.playing ? 'Mettre le mix en pause' : 'Lancer le mix');
+      this.shadowRoot.querySelector('[data-island-play]').innerHTML = icon(this.playing ? 'pause' : 'play');
+      this.shadowRoot.querySelector('[data-island-play]').setAttribute('aria-label', this.playing ? 'Mettre le mix en pause' : 'Reprendre le mix');
+      this.shadowRoot.querySelectorAll('[data-timer]').forEach((button) => {
+        button.classList.toggle('active', Number(button.dataset.timer) === this.timerDuration);
+      });
+      this.updateTimerDisplay();
+      this.updateIsland();
+      this.updateToolbarButton();
+    }
+
+    renderPresets() {
+      const list = this.shadowRoot.querySelector('[data-preset-list]');
+      list.innerHTML = this.presets.length
+        ? this.presets.map((preset, index) => `<span class="favorite"><button type="button" data-preset="${index}">${escapeHtml(preset.name)}</button><button type="button" data-delete-preset="${index}" aria-label="Supprimer ${escapeHtml(preset.name)}">×</button></span>`).join('')
+        : '<span class="mix-empty">Aucun mix enregistré.</span>';
+    }
+
+    renderPlaylists() {
+      this.shadowRoot.querySelector('[data-playlists]').innerHTML = PLAYLISTS.map(([name, id]) =>
+        `<button type="button" class="playlist" data-playlist="${id}"><span class="playlist-mark">${icon('music')}</span><span class="playlist-copy"><strong>${escapeHtml(name)}</strong><small>Spotify</small></span></button>`
+      ).join('');
+    }
+
+    renderFavorites() {
+      this.shadowRoot.querySelector('[data-favorites]').innerHTML = this.favorites.length
+        ? this.favorites.map((favorite, index) => `<span class="favorite"><button type="button" data-favorite="${index}" title="${escapeHtml(favorite.url)}">${escapeHtml(favorite.name)}</button><button type="button" data-delete-favorite="${index}" aria-label="Supprimer ${escapeHtml(favorite.name)}">×</button></span>`).join('')
+        : '<span class="mix-empty">Aucun favori.</span>';
+    }
+
+    toggleSound(id) {
+      const existing = this.selected.find((item) => item.id === id);
+      if (existing) {
+        this.sounds[id]?.player?.stop();
+        this.selected = this.selected.filter((item) => item.id !== id);
+        if (!this.selected.length) {
+          this.playing = false;
+          this.clearTimer();
         }
       } else {
-        sounds = {};
+        const sound = this.sounds[id];
+        if (!sound) return;
+        if (this.selected.length >= MAX_ACTIVE) {
+          this.setStatus(`Vous pouvez superposer jusqu’à ${MAX_ACTIVE} sons.`);
+          return;
+        }
+        const studioAlreadyPlaying = this.selected.some(({ id: activeId }) => this.sounds[activeId]?.player?.playing());
+        if (!studioAlreadyPlaying) this.stopBackgroundAudio();
+        this.selected.push({ id, volume: 0.5 });
+        this.playing = true;
+        this.playSound(id, 0.5);
+      }
+      this.saveState();
+      this.renderSounds();
+      this.renderMix();
+      this.renderPresets();
+    }
+
+    stopBackgroundAudio() {
+      const music = this.music;
+      if (!music) return;
+      const activeIds = Array.isArray(music.activeSounds) ? [...music.activeSounds] : [];
+      Object.values(music.sounds || {}).forEach((sound) => sound.player?.stop());
+      if (Array.isArray(music.activeSounds)) music.activeSounds.length = 0;
+      music.soundName = 'none';
+      if (music.elementEmoji && music.sounds?.none) {
+        music.elementEmoji.style.opacity = '1';
+        music.elementEmoji.textContent = music.sounds.none.emoji;
+      }
+      if (music.settingsPlayButton) music.settingsPlayButton.textContent = 'Play';
+      music.popup?.querySelectorAll('[data-sound]').forEach((button) => {
+        if (activeIds.includes(button.dataset.sound)) button.dataset.active = 'false';
+      });
+      music.playSoundsButton?.classList.remove('paused');
+    }
+
+    playSound(id, volume) {
+      const sound = this.sounds[id];
+      if (!sound || (!sound.openSource && !this.music?.playSound)) {
+        this.setStatus('Le moteur audio du site est indisponible.', true);
+        return;
+      }
+      try {
+        if (sound.openSource) {
+          if (typeof window.Howl !== 'function') {
+            this.playing = this.selected.some(({ id: activeId }) => this.sounds[activeId]?.player?.playing());
+            this.setStatus('Le lecteur audio du navigateur est indisponible.', true);
+            return;
+          }
+          if (!sound.player) {
+            sound.player = new window.Howl({
+              src: [sound.src],
+              format: ['mp3'],
+              loop: true,
+              html5: true,
+              preload: false,
+            });
+          }
+          this.watchSoundErrors(id, sound);
+          sound.player.volume(volume * this.masterVolume);
+          if (!sound.player.playing()) sound.player.play();
+          return;
+        }
+        if (!sound.player || !sound.player.playing()) this.music.playSound(id);
+        this.watchSoundErrors(id, sound);
+        sound.player?.volume(volume * this.masterVolume);
+      } catch (error) {
+        console.error(`Studio : lecture impossible pour ${id}.`, error);
+        this.playing = this.selected.some(({ id: activeId }) => this.sounds[activeId]?.player?.playing());
+        this.setStatus(`Impossible de lancer « ${sound.name} ».`, true);
       }
     }
-    
-    _createToolbarButton() {
-      const addBtn = (bar) => {
+
+    watchSoundErrors(id, sound) {
+      if (!sound.player?.once || sound._soundRoomListeners) return;
+      sound.player.once('loaderror', (_, error) => {
+        console.error(`Studio : chargement impossible pour ${id}.`, error);
+        sound._soundRoomListeners = false;
+        if (sound.openSource) {
+          sound.player?.unload();
+          sound.player = null;
+        }
+        this.playing = this.selected.some(({ id: activeId }) => this.sounds[activeId]?.player?.playing());
+        this.setStatus(`Impossible de charger le son « ${sound.name} ».`, true);
+        this.renderMix();
+      });
+      sound.player.once('playerror', (_, error) => {
+        console.error(`Studio : lecture bloquée pour ${id}.`, error);
+        sound._soundRoomListeners = false;
+        this.playing = this.selected.some(({ id: activeId }) => this.sounds[activeId]?.player?.playing());
+        this.setStatus(`La lecture du son « ${sound.name} » a été bloquée.`, true);
+        this.renderMix();
+      });
+      sound._soundRoomListeners = true;
+    }
+
+    setVolume(id, volume) {
+      const item = this.selected.find((sound) => sound.id === id);
+      if (!item) return;
+      item.volume = volume;
+      this.sounds[id]?.player?.volume(volume * this.masterVolume);
+      this.saveState();
+    }
+
+    setMasterVolume(volume) {
+      this.masterVolume = volume;
+      this.selected.forEach(({ id, volume: layerVolume }) => this.sounds[id]?.player?.volume(layerVolume * volume));
+      this.shadowRoot.querySelector('[data-master-value]').textContent = `${Math.round(volume * 100)}%`;
+      this.saveState();
+    }
+
+    addRandomSound() {
+      const available = Object.entries(this.sounds).filter(([id, sound]) =>
+        id !== 'none' && !this.selected.some((item) => item.id === id)
+      );
+      if (!available.length) {
+        this.setStatus('Tous les sons disponibles sont déjà dans le mix.');
+        return;
+      }
+      const [id] = available[Math.floor(Math.random() * available.length)];
+      this.toggleSound(id);
+    }
+
+    togglePlayback() {
+      if (!this.selected.length) return;
+      this.playing = !this.playing;
+      this.selected.forEach(({ id, volume }) => {
+        const player = this.sounds[id]?.player;
+        if (this.playing) this.playSound(id, volume);
+        else player?.pause();
+      });
+      this.renderMix();
+    }
+
+    stopMix() {
+      this.clearTimer();
+      this.selected.forEach(({ id }) => this.sounds[id]?.player?.stop());
+      this.selected = [];
+      this.playing = false;
+      this.saveState();
+      this.renderSounds();
+      this.renderMix();
+      this.renderPresets();
+    }
+
+    clearTimer() {
+      clearInterval(this.timerInterval);
+      clearTimeout(this.timerFadeTimeout);
+      this.timerInterval = null;
+      this.timerFadeTimeout = null;
+      this.timerDuration = 0;
+      this.timerEndsAt = 0;
+    }
+
+    startTimer(minutes) {
+      this.clearTimer();
+      if (minutes && !this.selected.length) {
+        this.setStatus('Ajoutez un son avant de lancer le compte à rebours.');
+        this.renderMix();
+        return;
+      }
+      this.timerDuration = minutes;
+      this.timerEndsAt = minutes ? Date.now() + minutes * 60 * 1000 : 0;
+      if (minutes) {
+        this.timerInterval = setInterval(() => {
+          if (Date.now() >= this.timerEndsAt) {
+            this.clearTimer();
+            this.selected.forEach(({ id }) => {
+              const player = this.sounds[id]?.player;
+              if (!player?.playing()) return;
+              const current = player.volume();
+              if (typeof player.fade === 'function') player.fade(current, 0, 4000);
+            });
+            this.setStatus('La session se termine en douceur.');
+            this.timerFadeTimeout = setTimeout(() => this.stopMix(), 4000);
+          } else this.updateTimerDisplay();
+        }, 1000);
+      }
+      this.renderMix();
+    }
+
+    updateTimerDisplay() {
+      const display = this.shadowRoot.querySelector('[data-timer-display]');
+      if (!display) return;
+      if (!this.timerEndsAt) {
+        display.textContent = '--:--';
+        return;
+      }
+      const remaining = Math.max(0, Math.ceil((this.timerEndsAt - Date.now()) / 1000));
+      display.textContent = `${String(Math.floor(remaining / 60)).padStart(2, '0')}:${String(remaining % 60).padStart(2, '0')}`;
+    }
+
+    loadPreset(index) {
+      const preset = this.presets[index];
+      if (!preset) return;
+      const availableIds = (preset.sounds || [])
+        .filter((id) => this.sounds[id])
+        .slice(0, MAX_ACTIVE);
+      if (!availableIds.length) {
+        this.setStatus('Ce mix ne contient aucun son gratuit disponible.', true);
+        return;
+      }
+      this.selected.forEach(({ id }) => this.sounds[id]?.player?.stop());
+      this.selected = availableIds.map((id) => {
+        const volume = Number(preset.volumes?.[id]);
+        return { id, volume: Number.isFinite(volume) ? Math.max(0, Math.min(1, volume)) : 0.5 };
+      });
+      this.playing = this.selected.length > 0;
+      this.selected.forEach(({ id, volume }) => this.playSound(id, volume));
+      this.saveState();
+      this.renderSounds();
+      this.renderMix();
+    }
+
+    removePreset(index) {
+      this.presets.splice(index, 1);
+      this.persist(PRESETS_KEY, this.presets);
+      this.renderPresets();
+    }
+
+    loadMusic(value) {
+      const track = parseMusicUrl(value || '');
+      if (!track) {
+        this.setStatus('Lien non reconnu. Utilisez un lien Spotify, Deezer, Tidal, YouTube, Apple Music, SoundCloud ou Amazon Music.', true);
+        return;
+      }
+      this.currentTrack = track;
+      this.renderMusicPlayer();
+      this.updateIsland();
+      this.setStatus(`${track.platform} est prêt.`);
+    }
+
+    renderMusicPlayer() {
+      const player = this.shadowRoot.querySelector('[data-player]');
+      if (!this.currentTrack) return;
+      player.innerHTML = `<div class="music-player-heading"><span>${escapeHtml(this.currentTrack.platform)}</span><button class="save-favorite" type="button" data-save-favorite>${icon('plus')}<span>Favori</span></button></div>
+        <input class="favorite-name" type="text" maxlength="60" placeholder="Nommer ce favori" aria-label="Nom du favori" data-favorite-name>
+        <iframe title="Lecteur ${escapeHtml(this.currentTrack.title)}" src="${escapeHtml(this.currentTrack.embed)}" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="autoplay; encrypted-media; clipboard-write; picture-in-picture" allowfullscreen></iframe>`;
+    }
+
+    saveFavorite() {
+      if (!this.currentTrack) return;
+      if (this.favorites.some((favorite) => favorite.url === this.currentTrack.url)) {
+        this.setStatus('Ce lien est déjà dans vos favoris.');
+        return;
+      }
+      const input = this.shadowRoot.querySelector('[data-favorite-name]');
+      const fallbackName = `${this.currentTrack.platform} · ${this.currentTrack.url.split('/').filter(Boolean).pop() || 'Ma musique'}`;
+      this.favorites.unshift({
+        url: this.currentTrack.url,
+        platform: this.currentTrack.platform,
+        name: input.value.trim().slice(0, 60) || fallbackName,
+      });
+      this.favorites = this.favorites.slice(0, 30);
+      if (this.persist(FAVORITES_KEY, this.favorites)) {
+        input.value = '';
+        this.renderFavorites();
+        this.setStatus('Ajouté à vos favoris.');
+      }
+    }
+
+    removeFavorite(index) {
+      this.favorites.splice(index, 1);
+      this.persist(FAVORITES_KEY, this.favorites);
+      this.renderFavorites();
+    }
+
+    switchTab(name) {
+      this.shadowRoot.querySelectorAll('[data-tab]').forEach((button) => {
+        button.setAttribute('aria-selected', String(button.dataset.tab === name));
+      });
+      this.shadowRoot.querySelectorAll('[data-page]').forEach((page) => {
+        page.hidden = page.dataset.page !== name;
+      });
+      this.positionPopover();
+    }
+
+    setStatus(message, isError = false) {
+      const musicPage = this.shadowRoot.querySelector('[data-page="music"]');
+      const status = this.shadowRoot.querySelector(musicPage && !musicPage.hidden ? '[data-music-status]' : '[data-status]');
+      if (!status) return;
+      status.textContent = message;
+      status.classList.toggle('error', isError);
+      clearTimeout(this._statusTimer);
+      this._statusTimer = setTimeout(() => {
+        status.textContent = '';
+        status.classList.remove('error');
+      }, 5000);
+    }
+
+    addToolbarButton() {
+      const addButton = (bar) => {
         if (bar.querySelector('[data-nestafocus-sounds]')) return;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'dash-button';
-        btn.dataset.nestafocusSounds = 'true';
-        btn.setAttribute('aria-label', 'Ouvrir le Studio');
-        btn.title = 'Studio — Sons + Musique';
-        btn.innerHTML = ICONS.headphones;
-        btn.addEventListener('click', () => this.open());
-        bar.appendChild(btn);
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'dash-button';
+        button.dataset.nestafocusSounds = 'true';
+        button.setAttribute('aria-label', 'Ouvrir le Studio sonore');
+        button.title = 'Studio sonore — Ambiance et musique';
+        button.innerHTML = icon('sound');
+        button.addEventListener('click', () => this.hasAttribute('open') ? this.close() : this.open());
+        bar.appendChild(button);
       };
-      const bar = document.getElementById('bottom-left') || document.getElementById('bottom-right');
-      if (bar) {
-        addBtn(bar);
-      } else {
-        const obs = new MutationObserver(() => {
-          const b = document.getElementById('bottom-left') || document.getElementById('bottom-right');
-          if (b) { addBtn(b); obs.disconnect(); }
+      const findBar = () => document.getElementById('bottom-left') || document.getElementById('bottom-right');
+      const bar = findBar();
+      if (bar) addButton(bar);
+      else {
+        const observer = new MutationObserver(() => {
+          const target = findBar();
+          if (!target) return;
+          addButton(target);
+          observer.disconnect();
         });
-        obs.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, { childList: true, subtree: true });
+        this._toolbarObserver = observer;
       }
     }
-    
+
+    positionPopover() {
+      const popover = this.shadowRoot.querySelector('[data-popover]');
+      const button = document.querySelector('[data-nestafocus-sounds]');
+      if (!popover || !button) return;
+      const rect = button.getBoundingClientRect();
+      if (window.innerWidth <= 760) {
+        popover.style.top = '68px';
+        popover.style.right = '12px';
+        popover.style.bottom = 'auto';
+        popover.style.left = '12px';
+        popover.style.height = `${Math.max(300, Math.min(460, window.innerHeight - 100))}px`;
+        return;
+      }
+      popover.style.top = 'auto';
+      const bottom = Math.max(18, window.innerHeight - rect.top + 9);
+      const panelHeight = Math.min(650, window.innerHeight - 100);
+      const panelWidth = popover.getBoundingClientRect().width;
+      const maxLeft = window.innerWidth - panelWidth - 12;
+      let left = Math.max(12, Math.min(rect.left, maxLeft));
+      const clock = document.querySelector('flocus-timedisplay .text-clock')?.getBoundingClientRect();
+      const panelTop = window.innerHeight - bottom - panelHeight;
+      if (clock && panelTop < clock.bottom && panelTop + panelHeight > clock.top
+        && left < clock.right && left + panelWidth > clock.left) {
+        const alternatives = [clock.left - panelWidth - 16, clock.right + 16]
+          .filter((candidate) => candidate >= 12 && candidate <= maxLeft);
+        if (alternatives.length) left = alternatives.sort((a, b) => Math.abs(a - rect.left) - Math.abs(b - rect.left))[0];
+      }
+      popover.style.bottom = `${bottom}px`;
+      popover.style.left = `${left}px`;
+      popover.style.right = 'auto';
+      popover.style.height = `${panelHeight}px`;
+    }
+
+    updateIslandClock() {
+      const clock = document.querySelector('flocus-timedisplay .text-clock');
+      const text = clock?.textContent?.trim().replace(/\s+/g, ' ') || '--:--';
+      const mode = document.body.dataset.dashboardMode === 'focus' ? 'MINUTEUR FOCUS' : 'HORLOGE DU SITE';
+      const clockDisplay = this.shadowRoot.querySelector('[data-site-clock]');
+      const islandClock = this.shadowRoot.querySelector('[data-island-site-time]');
+      const label = this.shadowRoot.querySelector('[data-island-clock-label]');
+      if (clockDisplay) clockDisplay.textContent = text;
+      if (islandClock) islandClock.textContent = text;
+      if (label) label.textContent = mode;
+      const timer = this.shadowRoot.querySelector('[data-island-audio-time]');
+      if (timer) timer.textContent = this.timerEndsAt ? this.shadowRoot.querySelector('[data-timer-display]').textContent : 'Sans limite';
+    }
+
+    updateIsland() {
+      const hasAudio = this.selected.length > 0 || Boolean(this.currentTrack);
+      this.toggleAttribute('has-audio', hasAudio);
+      this.toggleAttribute('playing', this.playing);
+      if (!hasAudio) {
+        this.removeAttribute('island-expanded');
+        this.shadowRoot.querySelector('[data-island-toggle]').setAttribute('aria-expanded', 'false');
+      }
+      const names = this.selected.map(({ id }) => this.sounds[id]?.name).filter(Boolean);
+      const title = names.length ? names.join(' · ') : this.currentTrack?.platform || 'Studio sonore';
+      this.shadowRoot.querySelector('[data-island-track]').textContent = title;
+      this.shadowRoot.querySelector('[data-island-detail]').textContent = title;
+      this.shadowRoot.querySelector('[data-island-audio-label]').textContent = this.currentTrack && !names.length ? 'MUSIQUE' : this.playing ? 'SON AMBIANT · EN COURS' : 'SON AMBIANT · EN PAUSE';
+      const toggle = this.shadowRoot.querySelector('[data-island-toggle]');
+      toggle.setAttribute('aria-label', this.hasAttribute('island-expanded') ? 'Réduire le lecteur' : `Afficher le lecteur${title ? ` : ${title}` : ''}`);
+      this.shadowRoot.querySelector('[data-island-stop]').disabled = !this.selected.length;
+      this.shadowRoot.querySelector('[data-island-play]').disabled = !this.selected.length;
+      this.updateIslandClock();
+    }
+
     open() {
-      this._overlay.classList.add('show');
-      this._modal.classList.add('show');
-      const btn = document.querySelector('[data-nestafocus-sounds]');
-      if (btn) btn.classList.add('active');
-      setTimeout(() => this._modal.querySelector('.ss-search input')?.focus(), 100);
+      this._previousFocus = document.activeElement;
+      this.positionPopover();
+      this.setAttribute('open', '');
+      this.shadowRoot.querySelector('[data-close]').focus();
+      this.updateToolbarButton();
     }
-    
+
     close() {
-      this._overlay.classList.remove('show');
-      this._modal.classList.remove('show');
-      const btn = document.querySelector('[data-nestafocus-sounds]');
-      if (btn) btn.classList.remove('active');
+      this.removeAttribute('open');
+      this.removeAttribute('island-expanded');
+      this.shadowRoot.querySelector('[data-island-toggle]')?.setAttribute('aria-expanded', 'false');
+      this._previousFocus?.focus?.();
+      this.updateToolbarButton();
     }
-    
+
+    updateToolbarButton() {
+      const button = document.querySelector('[data-nestafocus-sounds]');
+      if (!button) return;
+      button.classList.toggle('active', this.playing || this.hasAttribute('open'));
+      button.setAttribute('aria-label', this.selected.length
+        ? `Ouvrir le Studio sonore, ${this.selected.length} sons actifs`
+        : 'Ouvrir le Studio sonore');
+    }
+
     disconnectedCallback() {
-      if (this._modal?._keyHandler) document.removeEventListener('keydown', this._modal._keyHandler);
+      document.removeEventListener('keydown', this._keyHandler);
+      document.removeEventListener('pointerdown', this._outsideHandler);
+      window.removeEventListener('resize', this._resizeHandler);
+      this._toolbarObserver?.disconnect();
+      clearTimeout(this._statusTimer);
+      clearInterval(this.clockInterval);
+      this.clearTimer();
     }
   }
-  
+
+  const outerStyle = document.createElement('style');
+  outerStyle.textContent = `
+    .dash-button[data-nestafocus-sounds] svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+    .dash-button[data-nestafocus-sounds].active{color:#f66624!important}
+  `;
+  document.head.appendChild(outerStyle);
+
   customElements.define('sounds-studio', SoundsStudio);
   window.SoundsStudio = SoundsStudio;
 })();
-
-

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
     <head>
         <meta charset="utf-8">
@@ -31,15 +31,23 @@
         <script>
         document.addEventListener('DOMContentLoaded', () => {
             const initSounds = () => {
-                if (!window.Flocus?.newMusic?.sounds) {
-                    setTimeout(initSounds, 100);
-                    return;
-                }
+                if (!window.Flocus?.newMusic?.sounds || !customElements.get('sounds-studio')) return false;
                 const studio = document.createElement('sounds-studio');
                 document.body.appendChild(studio);
                 window.Flocus.soundsStudio = studio;
+                return true;
             };
-            initSounds();
+            if (!initSounds()) {
+                let attempts = 0;
+                const timer = setInterval(() => {
+                    attempts++;
+                    const ready = initSounds();
+                    if (ready || attempts >= 50) {
+                        clearInterval(timer);
+                        if (!ready) console.error('Studio indisponible : initialisation audio du site introuvable.');
+                    }
+                }, 100);
+            }
         });
         </script>
     </body>
