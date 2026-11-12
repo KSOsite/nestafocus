@@ -1,0 +1,1141 @@
+.nf-productivity-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 12000;
+  display: none;
+  place-items: center;
+  padding: 24px;
+  background: rgba(3, 10, 25, .66);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.nf-productivity-overlay.is-open {
+  display: grid;
+}
+
+.nf-productivity-app,
+.nf-productivity-app * {
+  box-sizing: border-box;
+}
+
+.nf-productivity-app {
+  --nf-bg: #0c1930;
+  --nf-panel: #111f37;
+  --nf-border: rgba(218, 228, 245, .12);
+  --nf-text: #f8fafc;
+  --nf-muted: #a9b5c8;
+  --nf-accent: #f66624;
+  display: flex;
+  flex-direction: column;
+  width: min(940px, calc(100vw - 32px));
+  height: min(760px, calc(100dvh - 32px));
+  overflow: hidden;
+  border: 1px solid var(--nf-border);
+  border-radius: 22px;
+  color: var(--nf-text);
+  background: linear-gradient(145deg, rgba(15, 31, 56, .98), rgba(7, 17, 35, .98));
+  box-shadow: 0 32px 100px rgba(0, 0, 0, .48), inset 0 1px rgba(255, 255, 255, .05);
+  font: 14px/1.5 Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.nf-productivity-app button,
+.nf-productivity-app input,
+.nf-productivity-app select {
+  font: inherit;
+}
+
+.nf-productivity-app button {
+  color: inherit;
+}
+
+.nf-productivity-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  min-height: 82px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--nf-border);
+  background: rgba(255, 255, 255, .018);
+}
+
+.nf-productivity-brand,
+.nf-productivity-header-actions,
+.nf-productivity-tabs,
+.nf-productivity-tabs button,
+.nf-productivity-mark,
+.nf-task-add,
+.nf-task-add-icon,
+.nf-task-toolbar,
+.nf-task-filters,
+.nf-task-row,
+.nf-task-meta,
+.nf-productivity-footer,
+.nf-notes-sidebar-head,
+.nf-note-editor-head,
+.nf-note-toolbar,
+.nf-note-footer,
+.nf-icon-button,
+.nf-search {
+  display: flex;
+  align-items: center;
+}
+
+.nf-productivity-brand {
+  min-width: 0;
+  gap: 12px;
+}
+
+.nf-productivity-mark {
+  flex: 0 0 42px;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(246, 102, 36, .34);
+  border-radius: 13px;
+  color: #ff986c;
+  background: rgba(246, 102, 36, .12);
+}
+
+.nf-productivity-mark svg,
+.nf-productivity-tabs svg,
+.nf-productivity-close svg,
+.nf-icon-button svg,
+.nf-task-add-icon svg,
+.nf-empty-icon svg,
+.nf-note-welcome button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.nf-productivity-brand h1,
+.nf-productivity-brand p,
+.nf-tasks-top h2,
+.nf-tasks-top p,
+.nf-notes-sidebar-head h2,
+.nf-note-welcome h3,
+.nf-note-welcome p {
+  margin: 0;
+}
+
+.nf-productivity-brand h1 {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+
+.nf-productivity-brand p {
+  margin-top: 2px;
+  color: var(--nf-muted);
+  font-size: 12px;
+}
+
+.nf-productivity-header-actions {
+  gap: 14px;
+}
+
+.nf-productivity-tabs {
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--nf-border);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, .15);
+}
+
+.nf-productivity-tabs button {
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9px;
+  color: var(--nf-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: background .16s ease, color .16s ease;
+}
+
+.nf-productivity-tabs button.is-active {
+  color: #fff;
+  background: rgba(246, 102, 36, .17);
+  box-shadow: inset 0 0 0 1px rgba(246, 102, 36, .24);
+}
+
+.nf-productivity-tabs svg {
+  width: 17px;
+  height: 17px;
+}
+
+.nf-productivity-close,
+.nf-icon-button {
+  flex: 0 0 auto;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--nf-border);
+  border-radius: 10px;
+  color: var(--nf-muted);
+  background: rgba(255, 255, 255, .035);
+  cursor: pointer;
+  transition: color .16s ease, background .16s ease, border-color .16s ease;
+}
+
+.nf-productivity-close {
+  width: 38px;
+  height: 38px;
+}
+
+.nf-productivity-close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nf-productivity-close:hover,
+.nf-icon-button:hover {
+  border-color: rgba(246, 102, 36, .4);
+  color: #fff;
+  background: rgba(246, 102, 36, .12);
+}
+
+.nf-productivity-main {
+  flex: 1;
+  min-height: 0;
+}
+
+.nf-productivity-view {
+  display: none;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.nf-productivity-view.is-active {
+  display: flex;
+  flex-direction: column;
+}
+
+.nf-tasks-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 27px 32px 20px;
+}
+
+.nf-eyebrow {
+  color: #ff986c;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .13em;
+}
+
+.nf-tasks-top h2,
+.nf-notes-sidebar-head h2 {
+  margin-top: 4px;
+  font-size: 25px;
+  font-weight: 680;
+  letter-spacing: -.035em;
+}
+
+.nf-tasks-top p {
+  margin-top: 4px;
+  color: var(--nf-muted);
+  font-size: 12px;
+}
+
+.nf-task-progress {
+  display: grid;
+  flex: 0 0 132px;
+  gap: 7px;
+  justify-items: end;
+  color: var(--nf-muted);
+  font-size: 11px;
+}
+
+.nf-task-progress > div {
+  width: 100%;
+  height: 5px;
+  overflow: hidden;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, .12);
+}
+
+.nf-task-progress i {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f66624, #ffae72);
+  transition: width .22s ease;
+}
+
+.nf-task-add {
+  gap: 11px;
+  min-height: 58px;
+  margin: 0 32px 20px;
+  padding: 8px 9px 8px 15px;
+  border: 1px solid rgba(246, 102, 36, .3);
+  border-radius: 13px;
+  background: rgba(246, 102, 36, .055);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .1);
+}
+
+.nf-task-add-icon {
+  flex: 0 0 20px;
+  color: #ff986c;
+}
+
+.nf-task-add-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.nf-task-add input,
+.nf-task-add select,
+.nf-search input,
+.nf-task-title,
+.nf-task-date,
+.nf-task-priority,
+.nf-note-editor-head input {
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  color: var(--nf-text);
+  background: transparent;
+}
+
+.nf-task-add input {
+  flex: 1;
+}
+
+.nf-task-add input::placeholder,
+.nf-search input::placeholder,
+.nf-note-editor-head input::placeholder {
+  color: #8190a8;
+}
+
+.nf-task-add select {
+  height: 36px;
+  padding: 0 8px;
+  border-left: 1px solid var(--nf-border);
+  color: var(--nf-muted);
+  background: var(--nf-bg);
+}
+
+.nf-task-add select option,
+.nf-task-priority option {
+  color: var(--nf-text);
+  background: var(--nf-bg);
+}
+
+.nf-task-add > button,
+.nf-note-welcome button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 38px;
+  padding: 0 15px;
+  border: 0;
+  border-radius: 9px;
+  color: #15151a;
+  background: #f98756;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background .16s ease, transform .16s ease;
+}
+
+.nf-task-add > button:hover,
+.nf-note-welcome button:hover {
+  background: #ff9a6d;
+  transform: translateY(-1px);
+}
+
+.nf-task-toolbar {
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 32px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--nf-border);
+}
+
+.nf-task-filters {
+  gap: 4px;
+}
+
+.nf-task-filters button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--nf-muted);
+  background: transparent;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.nf-task-filters button span {
+  min-width: 17px;
+  padding: 1px 5px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .08);
+  text-align: center;
+}
+
+.nf-task-filters button.is-active {
+  color: #fff;
+  background: rgba(255, 255, 255, .075);
+}
+
+.nf-search {
+  gap: 7px;
+  width: min(210px, 42%);
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--nf-border);
+  border-radius: 9px;
+  color: var(--nf-muted);
+  background: rgba(255, 255, 255, .025);
+}
+
+.nf-search > span:not(.nf-sr-only) {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.nf-search input {
+  flex: 1;
+  width: 100%;
+  font-size: 11px;
+}
+
+.nf-task-list {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px 32px 20px;
+  scrollbar-color: rgba(255, 255, 255, .2) transparent;
+  scrollbar-width: thin;
+}
+
+.nf-task-row {
+  gap: 13px;
+  min-height: 67px;
+  padding: 10px 9px;
+  border-bottom: 1px solid rgba(218, 228, 245, .075);
+  transition: background .15s ease;
+}
+
+.nf-task-row:hover {
+  border-radius: 10px;
+  background: rgba(255, 255, 255, .035);
+}
+
+.nf-task-row.is-subtask {
+  width: calc(100% - 24px);
+  margin-left: 24px;
+  border-left: 1px solid rgba(246, 102, 36, .3);
+}
+
+.nf-task-check {
+  position: relative;
+  flex: 0 0 21px;
+  width: 21px;
+  height: 21px;
+}
+
+.nf-task-check input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.nf-task-check span {
+  position: absolute;
+  inset: 0;
+  border: 1px solid rgba(235, 242, 255, .28);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, .025);
+}
+
+.nf-task-check input:checked + span {
+  border-color: var(--nf-accent);
+  background: var(--nf-accent);
+}
+
+.nf-task-check input:checked + span::after {
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  width: 5px;
+  height: 9px;
+  border: solid #17191c;
+  border-width: 0 2px 2px 0;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.nf-task-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.nf-task-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.nf-task-emoji {
+  flex: 0 0 auto;
+  font-size: 13px;
+}
+
+.nf-task-title {
+  flex: 1;
+  width: 0;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 550;
+}
+
+.nf-task-title:focus {
+  border-bottom: 1px solid rgba(246, 102, 36, .5);
+}
+
+.nf-task-row.is-completed .nf-task-title {
+  color: #8290a4;
+  text-decoration: line-through;
+}
+
+.nf-task-meta {
+  gap: 9px;
+  min-height: 20px;
+  margin-top: 3px;
+  color: #8794a9;
+  font-size: 10px;
+}
+
+.nf-task-tag {
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, .1);
+  border-radius: 9px;
+}
+
+.nf-task-date {
+  max-width: 120px;
+  color: #8794a9;
+  font-size: 10px;
+  color-scheme: dark;
+}
+
+.nf-task-priority {
+  width: 81px;
+  padding: 5px 3px;
+  border: 0;
+  outline: 0;
+  color: var(--nf-muted);
+  background: transparent;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.nf-task-priority.priority-high {
+  color: #ff9879;
+}
+
+.nf-task-priority.priority-low {
+  color: #9aabc1;
+}
+
+.nf-icon-button {
+  width: 34px;
+  height: 34px;
+}
+
+.nf-icon-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.nf-task-delete {
+  opacity: .48;
+}
+
+.nf-task-add-subtask {
+  opacity: .48;
+}
+
+.nf-task-row:hover .nf-task-delete,
+.nf-task-delete:focus-visible,
+.nf-task-row:hover .nf-task-add-subtask,
+.nf-task-add-subtask:focus-visible {
+  opacity: 1;
+}
+
+.nf-empty-state,
+.nf-notes-empty,
+.nf-note-welcome {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.nf-empty-state {
+  min-height: 220px;
+  color: var(--nf-muted);
+}
+
+.nf-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 11px;
+  border: 1px solid var(--nf-border);
+  border-radius: 14px;
+  color: #ff986c;
+  background: rgba(246, 102, 36, .085);
+}
+
+.nf-empty-state strong {
+  color: var(--nf-text);
+  font-size: 13px;
+}
+
+.nf-empty-state p {
+  margin: 4px 0 0;
+  font-size: 11px;
+}
+
+.nf-productivity-footer {
+  justify-content: space-between;
+  min-height: 43px;
+  padding: 0 32px;
+  border-top: 1px solid var(--nf-border);
+  color: #8d9bb0;
+  font-size: 10px;
+}
+
+.nf-productivity-footer [data-save-status].is-error,
+.nf-note-footer [data-save-status].is-error {
+  color: #ff947a;
+}
+
+.nf-text-button {
+  padding: 4px;
+  border: 0;
+  color: var(--nf-muted);
+  background: transparent;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.nf-text-button:hover {
+  color: #ff9879;
+}
+
+.nf-notes-view {
+  flex-direction: row !important;
+}
+
+.nf-notes-sidebar {
+  display: flex;
+  flex: 0 0 265px;
+  flex-direction: column;
+  min-width: 0;
+  border-right: 1px solid var(--nf-border);
+  background: rgba(255, 255, 255, .018);
+}
+
+.nf-notes-sidebar-head {
+  justify-content: space-between;
+  padding: 22px 18px 15px;
+}
+
+.nf-notes-sidebar-head h2 {
+  font-size: 21px;
+}
+
+.nf-notes-sidebar-head .nf-icon-button {
+  color: #ff986c;
+  border-color: rgba(246, 102, 36, .3);
+  background: rgba(246, 102, 36, .1);
+}
+
+.nf-notes-search {
+  width: auto;
+  margin: 0 14px 12px;
+}
+
+.nf-note-list {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 9px;
+}
+
+.nf-note-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 3px;
+  margin-bottom: 4px;
+  padding: 11px 11px 10px;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--nf-text);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nf-note-item:hover {
+  background: rgba(255, 255, 255, .045);
+}
+
+.nf-note-item.is-active {
+  border-color: rgba(246, 102, 36, .23);
+  background: rgba(246, 102, 36, .085);
+}
+
+.nf-note-item strong,
+.nf-note-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nf-note-item strong {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nf-note-item span,
+.nf-note-item time {
+  color: var(--nf-muted);
+  font-size: 10px;
+}
+
+.nf-note-item time {
+  margin-top: 3px;
+  color: #76869e;
+}
+
+.nf-notes-empty {
+  min-height: 130px;
+  padding: 10px;
+  color: var(--nf-muted);
+  font-size: 11px;
+}
+
+.nf-notes-sidebar-foot {
+  padding: 12px 14px;
+  border-top: 1px solid var(--nf-border);
+  color: #8391a7;
+  font-size: 10px;
+}
+
+.nf-note-editor {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 25px 31px 15px;
+}
+
+.nf-note-editor-head {
+  gap: 12px;
+  padding-bottom: 13px;
+}
+
+.nf-note-editor-head input {
+  flex: 1;
+  padding: 2px 0;
+  font-size: 21px;
+  font-weight: 650;
+  letter-spacing: -.025em;
+}
+
+.nf-note-editor-head input:focus {
+  border-bottom: 1px solid rgba(246, 102, 36, .5);
+}
+
+.nf-note-toolbar {
+  gap: 5px;
+  min-height: 42px;
+  margin-bottom: 14px;
+  padding: 4px;
+  border-top: 1px solid var(--nf-border);
+  border-bottom: 1px solid var(--nf-border);
+}
+
+.nf-note-toolbar button {
+  min-width: 31px;
+  height: 29px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--nf-muted);
+  background: transparent;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.nf-note-toolbar button:hover,
+.nf-note-toolbar button:focus-visible {
+  color: #fff;
+  background: rgba(255, 255, 255, .09);
+}
+
+.nf-note-toolbar > span {
+  width: 1px;
+  height: 18px;
+  margin: 0 3px;
+  background: var(--nf-border);
+}
+
+.nf-note-content {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 4px 2px;
+  outline: 0;
+  color: #dce5f2;
+  font-size: 13px;
+  line-height: 1.8;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, .2) transparent;
+}
+
+.nf-note-content:focus {
+  color: #f7f9fc;
+}
+
+.nf-note-content:empty::before {
+  color: #71819a;
+  content: "Start writing…";
+  pointer-events: none;
+}
+
+.nf-note-content h1,
+.nf-note-content h2 {
+  margin: 10px 0;
+  color: #fff;
+  line-height: 1.35;
+}
+
+.nf-note-content h1 {
+  font-size: 22px;
+}
+
+.nf-note-content h2 {
+  font-size: 18px;
+}
+
+.nf-note-content p {
+  margin: 0 0 9px;
+}
+
+.nf-note-content blockquote {
+  margin: 10px 0;
+  padding-left: 12px;
+  border-left: 2px solid var(--nf-accent);
+  color: #aab8ca;
+}
+
+.nf-note-content a {
+  color: #ff986c;
+}
+
+.nf-note-content ul,
+.nf-note-content ol {
+  padding-left: 22px;
+}
+
+.nf-note-content code,
+.nf-note-content pre {
+  border-radius: 5px;
+  background: rgba(255, 255, 255, .08);
+}
+
+.nf-note-content code {
+  padding: 2px 5px;
+}
+
+.nf-note-content pre {
+  padding: 10px;
+  white-space: pre-wrap;
+}
+
+.nf-note-footer {
+  justify-content: space-between;
+  min-height: 31px;
+  margin-top: 8px;
+  border-top: 1px solid var(--nf-border);
+  color: #8795a9;
+  font-size: 10px;
+}
+
+.nf-note-welcome {
+  flex: 1;
+  color: var(--nf-muted);
+}
+
+.nf-note-welcome h3 {
+  color: var(--nf-text);
+  font-size: 16px;
+}
+
+.nf-note-welcome p {
+  margin: 5px 0 16px;
+  font-size: 12px;
+}
+
+.nf-note-welcome button {
+  min-height: 37px;
+}
+
+.nf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+body.nf-productivity-open {
+  overflow: hidden;
+}
+
+@media (max-width: 700px) {
+  .nf-productivity-overlay {
+    padding: 8px;
+  }
+
+  .nf-productivity-app {
+    width: calc(100vw - 16px);
+    height: calc(100dvh - 16px);
+    border-radius: 17px;
+  }
+
+  .nf-productivity-header {
+    min-height: 69px;
+    padding: 11px 14px;
+  }
+
+  .nf-productivity-brand {
+    gap: 8px;
+  }
+
+  .nf-productivity-mark {
+    flex-basis: 36px;
+    width: 36px;
+    height: 36px;
+  }
+
+  .nf-productivity-brand h1 {
+    font-size: 13px;
+  }
+
+  .nf-productivity-brand p {
+    display: none;
+  }
+
+  .nf-productivity-header-actions {
+    gap: 7px;
+  }
+
+  .nf-productivity-tabs button {
+    gap: 5px;
+    min-height: 33px;
+    padding: 0 9px;
+    font-size: 11px;
+  }
+
+  .nf-productivity-close {
+    width: 34px;
+    height: 34px;
+  }
+
+  .nf-tasks-top {
+    padding: 20px 17px 14px;
+  }
+
+  .nf-tasks-top h2 {
+    font-size: 22px;
+  }
+
+  .nf-task-progress {
+    flex-basis: 74px;
+  }
+
+  .nf-task-add {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 16px 14px;
+    padding: 8px 9px;
+  }
+
+  .nf-task-add input {
+    min-height: 35px;
+  }
+
+  .nf-task-add select {
+    flex: 1;
+    border-left: 0;
+  }
+
+  .nf-task-add > button {
+    min-height: 34px;
+    padding: 0 11px;
+  }
+
+  .nf-task-toolbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 16px;
+  }
+
+  .nf-task-filters {
+    flex: 1;
+    justify-content: space-between;
+  }
+
+  .nf-task-filters button {
+    gap: 4px;
+    padding: 0 5px;
+    font-size: 10px;
+  }
+
+  .nf-task-toolbar > .nf-search {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .nf-task-list {
+    padding: 5px 15px 15px;
+  }
+
+  .nf-task-row {
+    gap: 8px;
+    padding: 9px 3px;
+  }
+
+  .nf-task-priority {
+    width: 66px;
+    font-size: 9px;
+  }
+
+  .nf-task-date {
+    max-width: 105px;
+  }
+
+  .nf-task-delete {
+    width: 30px;
+    height: 30px;
+  }
+
+  .nf-productivity-footer {
+    min-height: 38px;
+    padding: 0 16px;
+  }
+
+  .nf-notes-sidebar {
+    flex-basis: 39%;
+  }
+
+  .nf-notes-sidebar-head {
+    padding: 17px 11px 12px;
+  }
+
+  .nf-notes-sidebar-head h2 {
+    font-size: 18px;
+  }
+
+  .nf-notes-search {
+    margin: 0 8px 10px;
+  }
+
+  .nf-note-list {
+    padding: 0 5px;
+  }
+
+  .nf-note-item {
+    padding: 9px 7px;
+  }
+
+  .nf-note-item strong {
+    font-size: 11px;
+  }
+
+  .nf-note-item span {
+    font-size: 9px;
+  }
+
+  .nf-note-editor {
+    padding: 17px 12px 10px;
+  }
+
+  .nf-note-editor-head input {
+    font-size: 17px;
+  }
+
+  .nf-note-toolbar {
+    flex-wrap: wrap;
+    gap: 1px;
+    margin-bottom: 8px;
+  }
+
+  .nf-note-toolbar button {
+    min-width: 26px;
+    padding: 0 5px;
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .nf-productivity-mark {
+    display: none;
+  }
+
+  .nf-productivity-brand h1 {
+    font-size: 12px;
+  }
+
+  .nf-productivity-tabs button {
+    gap: 4px;
+    padding: 0 7px;
+  }
+
+  .nf-notes-sidebar {
+    flex-basis: 35%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nf-productivity-app *,
+  .nf-productivity-app *::before,
+  .nf-productivity-app *::after {
+    scroll-behavior: auto !important;
+    transition-duration: .01ms !important;
+  }
+}

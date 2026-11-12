@@ -75,7 +75,6 @@
         transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
         box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
         opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      will-change: transform, box-shadow;
       background: #fce588;
     }
     
@@ -698,20 +697,6 @@
       }
     });
 
-    document.addEventListener('pointermove', (e) => {
-      if (!draggedNote || !trash) return;
-      
-      const trashRect = trash.getBoundingClientRect();
-      const isOverTrash = (
-        e.clientX >= trashRect.left &&
-        e.clientX <= trashRect.right &&
-        e.clientY >= trashRect.top &&
-        e.clientY <= trashRect.bottom
-      );
-      
-      trash.classList.toggle('highlight', isOverTrash);
-    });
-
     document.addEventListener('click', (e) => {
       if (activeColorPicker && !e.target.closest('.nf-postit-color') && !e.target.closest('.nf-color-picker')) {
         activeColorPicker.classList.remove('show');
@@ -903,10 +888,20 @@
       const startY = e.clientY;
       const startLeft = parseFloat(el.style.left);
       const startTop = parseFloat(el.style.top);
+      const noteWidth = el.offsetWidth;
+      const noteHeight = el.offsetHeight;
+      const startRect = el.getBoundingClientRect();
+      const trashRect = trash?.getBoundingClientRect();
       isDraggingNote = true;
       let hasMoved = false;
-      
-      const onMove = (moveEvent) => {
+      let pendingMove = null;
+      let moveFrame = 0;
+
+      const applyMove = () => {
+        moveFrame = 0;
+        const moveEvent = pendingMove;
+        pendingMove = null;
+        if (!moveEvent) return;
         const dx = moveEvent.clientX - startX;
         const dy = moveEvent.clientY - startY;
         
@@ -919,15 +914,21 @@
         if (hasMoved) {
           let nx = startLeft + dx;
           let ny = startTop + dy;
-          const clamped = clampPosition(nx, ny, el);
+          const clamped = clampPosition(nx, ny, el, noteWidth, noteHeight);
           el.style.left = `${clamped.x}px`;
           el.style.top = `${clamped.y}px`;
           note.x = clamped.x;
           note.y = clamped.y;
           
-          if (trash) {
-            const trashRect = trash.getBoundingClientRect();
-            const noteRect = el.getBoundingClientRect();
+          if (trash && trashRect) {
+            const offsetX = clamped.x - startLeft;
+            const offsetY = clamped.y - startTop;
+            const noteRect = {
+              left: startRect.left + offsetX,
+              right: startRect.right + offsetX,
+              top: startRect.top + offsetY,
+              bottom: startRect.bottom + offsetY,
+            };
             const isOverTrash = (
               noteRect.right > trashRect.left &&
               noteRect.left < trashRect.right &&
@@ -940,7 +941,16 @@
         }
       };
 
+      const onMove = (moveEvent) => {
+        pendingMove = moveEvent;
+        if (!moveFrame) moveFrame = requestAnimationFrame(applyMove);
+      };
+
       const onUp = () => {
+        if (moveFrame) {
+          cancelAnimationFrame(moveFrame);
+          applyMove();
+        }
         el.classList.remove('is-dragging', 'dragging-to-trash');
         if (header.hasPointerCapture(e.pointerId)) {
           header.releasePointerCapture(e.pointerId);
@@ -1029,9 +1039,9 @@
   }
 
   // ===== HELPERS =====
-  function clampPosition(x, y, el) {
-    const w = el?.offsetWidth || MIN_WIDTH;
-    const h = el?.offsetHeight || MIN_HEIGHT;
+  function clampPosition(x, y, el, width, height) {
+    const w = width || el?.offsetWidth || MIN_WIDTH;
+    const h = height || el?.offsetHeight || MIN_HEIGHT;
     const maxX = Math.max(8, window.innerWidth - w - 8);
     const maxY = Math.max(8, window.innerHeight - h - 8);
     return {

@@ -9,17 +9,6 @@
     return;
   };
 
-  // ===== OPTIMISATION : PRÉCHARGEMENT DE LA POLICE INTER =====
-  const preloadFont = () => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = 'style';
-    link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap';
-    link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
-  };
-  preloadFont();
-
   // ===== CSS MINIFIÉ ET OPTIMISÉ =====
   const style = document.createElement('style');
   style.textContent = `
@@ -752,6 +741,16 @@
   }
 
   const flocus = window.Flocus;
+  const settingsPanel = flocus?.settingsPanel;
+  if (settingsPanel?.showSpotifyTooltip && !settingsPanel.showSpotifyTooltip.nestafocusGuard) {
+    const showSpotifyTooltip = settingsPanel.showSpotifyTooltip;
+    settingsPanel.showSpotifyTooltip = function (...args) {
+      if (!document.querySelector('flocus-sounds')?.button) return;
+      return showSpotifyTooltip.apply(this, args);
+    };
+    Object.defineProperty(settingsPanel.showSpotifyTooltip, 'nestafocusGuard', { value: true });
+  }
+
   const themes = flocus?.themes;
   const themeKey = 'AbyssalGlow';
   const themeName = 'Abyssal Glow';
@@ -876,7 +875,7 @@ document.addEventListener('shown.bs.tab', selectDefaultThemeForPicker);
   function cleanNode(node) {
     if (node.nodeType === Node.TEXT_NODE) {
       const parent = node.parentElement;
-      if (parent?.closest(textSelectors)) {
+      if (!parent?.isContentEditable && parent?.closest(textSelectors)) {
         node.textContent = node.textContent.replace(emojiPattern, '').replace(/[ \t]+$/g, '');
       }
       return;
@@ -888,12 +887,14 @@ document.addEventListener('shown.bs.tab', selectDefaultThemeForPicker);
 
   function sanitizeFlocus(root) {
     if (!root) return;
-    const whatsNewTab = root.querySelector?.('#settModal-whatsnew-tab') || document.getElementById('settModal-whatsnew-tab');
+    if (root.closest?.('[contenteditable="true"]')) return;
+    const findInRoot = (selector) => root.matches?.(selector) ? root : root.querySelector?.(selector);
+    const whatsNewTab = findInRoot('#settModal-whatsnew-tab');
     if (whatsNewTab) whatsNewTab.remove();
-    const whatsNewPane = root.querySelector?.('#settModal-whatsnew') || document.getElementById('settModal-whatsnew');
+    const whatsNewPane = findInRoot('#settModal-whatsnew');
     if (whatsNewPane) whatsNewPane.remove();
 
-    const supportPane = root.querySelector?.('#settModal-support') || document.getElementById('settModal-support');
+    const supportPane = findInRoot('#settModal-support');
     if (supportPane && !supportPane.dataset.customizedSupport) {
       supportPane.dataset.customizedSupport = 'true';
       supportPane.innerHTML = `
@@ -904,15 +905,20 @@ document.addEventListener('shown.bs.tab', selectDefaultThemeForPicker);
       `;
     }
 
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-    let currentNode;
-    while ((currentNode = walker.nextNode())) {
-      if (currentNode.nodeValue && /Flocus/i.test(currentNode.nodeValue)) {
-        currentNode.nodeValue = currentNode.nodeValue.replace(/FLOCUS/g, 'NESTAFOCUS').replace(/Flocus/g, 'NestaFocus').replace(/flocus/g, 'nestafocus');
+    if (/flocus/i.test(root.textContent || '')) {
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let currentNode;
+      while ((currentNode = walker.nextNode())) {
+        if (currentNode.nodeValue && /Flocus/i.test(currentNode.nodeValue)) {
+          currentNode.nodeValue = currentNode.nodeValue.replace(/FLOCUS/g, 'NESTAFOCUS').replace(/Flocus/g, 'NestaFocus').replace(/flocus/g, 'nestafocus');
+        }
       }
     }
 
-    const links = root.querySelectorAll ? root.querySelectorAll('a') : [];
+    const linkSelector = 'a[href*="flocus.com"], a[href*="discord.gg"], a[href*="mailto:support@flocus.com"]';
+    const links = root.matches?.(linkSelector)
+      ? [root]
+      : (root.querySelectorAll ? root.querySelectorAll(linkSelector) : []);
     links.forEach((a) => {
       const href = a.getAttribute('href');
       if (href && (href.includes('flocus.com') || href.includes('discord.gg') || href.includes('mailto:support@flocus.com'))) {
@@ -922,11 +928,11 @@ document.addEventListener('shown.bs.tab', selectDefaultThemeForPicker);
       }
     });
 
-    const statsBtn = root.querySelector?.('.dash-button[data-fl-target="stats"]') || document.querySelector('.dash-button[data-fl-target="stats"]');
+    const statsBtn = findInRoot('.dash-button[data-fl-target="stats"]');
     if (statsBtn) statsBtn.remove();
-    const statsTab = root.querySelector?.('#settModal-stats-tab') || document.getElementById('settModal-stats-tab');
+    const statsTab = findInRoot('#settModal-stats-tab');
     if (statsTab) statsTab.remove();
-    const statsPane = root.querySelector?.('#settModal-stats') || document.getElementById('settModal-stats');
+    const statsPane = findInRoot('#settModal-stats');
     if (statsPane) statsPane.remove();
 
     const renderBeautifulLogo = (el) => {
@@ -938,7 +944,8 @@ document.addEventListener('shown.bs.tab', selectDefaultThemeForPicker);
       el.replaceWith(wrapper);
     };
 
-    const logos = root.querySelectorAll ? root.querySelectorAll('svg.logo, .logo svg, svg[viewBox="0 0 710.4 206.1"]') : [];
+    const logoSelector = 'svg.logo, .logo svg, svg[viewBox="0 0 710.4 206.1"]';
+    const logos = root.querySelectorAll ? root.querySelectorAll(logoSelector) : [];
     logos.forEach(renderBeautifulLogo);
     if (root.matches && (root.matches('svg.logo') || root.getAttribute?.('viewBox') === '0 0 710.4 206.1')) {
       renderBeautifulLogo(root);
@@ -962,16 +969,45 @@ document.addEventListener('shown.bs.tab', selectDefaultThemeForPicker);
   replaceSoundEmoji(document.body);
   sanitizeFlocus(document.body);
 
+  const pendingSanitizeNodes = new Set();
+  let sanitizeFrame = 0;
+  function queueSanitize(node) {
+    if (node.nodeType === Node.TEXT_NODE) {
+      cleanNode(node);
+      return;
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE ||
+        node.closest('.nestafocus-postits-layer, [contenteditable="true"]')) return;
+    pendingSanitizeNodes.add(node);
+    if (sanitizeFrame) return;
+    sanitizeFrame = requestAnimationFrame(() => {
+      sanitizeFrame = 0;
+      const pending = new Set(pendingSanitizeNodes);
+      pendingSanitizeNodes.clear();
+      for (const nodeToSanitize of pending) {
+        let parent = nodeToSanitize.parentElement;
+        let coveredByAncestor = false;
+        while (parent && parent !== document.body) {
+          if (pending.has(parent)) {
+            coveredByAncestor = true;
+            break;
+          }
+          parent = parent.parentElement;
+        }
+        if (!coveredByAncestor && nodeToSanitize.isConnected) {
+          cleanNode(nodeToSanitize);
+          replaceSoundEmoji(nodeToSanitize);
+          sanitizeFlocus(nodeToSanitize);
+        }
+      }
+    });
+  }
+
   new MutationObserver((records) => {
     records.forEach((record) => {
-      record.addedNodes.forEach((node) => {
-        cleanNode(node); replaceSoundEmoji(node);
-        if (node.nodeType === Node.ELEMENT_NODE) sanitizeFlocus(node);
-      });
+      record.addedNodes.forEach(queueSanitize);
       if (record.type === 'characterData') cleanNode(record.target);
     });
   }).observe(document.body, { childList: true, characterData: true, subtree: true });
 })();
-
-
 
